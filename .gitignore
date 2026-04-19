@@ -1,0 +1,43 @@
+# Compiled binaries
+*.elf
+*.so
+*.o
+*.a
+
+# Build output
+build/
+
+# Other platform folders
+all_myminui/
+gkdpixel/
+m17/
+macos/
+magicmini/
+miyoomini/
+my282/
+my355/
+rgb30/
+rg35xx/
+rg35xxplus/
+tg5040/
+trimuismart/
+zero28/
+
+# Loose binaries in workspace root
+*.elf
+libmsettings_rg351v.so
+libmsettings_rpp.so
+libtinyalsa.so.1
+
+# Runtime/device files
+custom_start.sh
+system.cfg
+logo.png
+logo720720.png
+
+# unzip60
+rg351v/other/unzip60/
+rpp/other/unzip60/
+
+# Logs
+*.log

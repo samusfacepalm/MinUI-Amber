@@ -1,0 +1,25 @@
+/btn = BTN_NONE; \/\/ already handled, force continue/ {
+    print "                            if (code == 16) { // ABS_HAT0X"
+    print "                                if (value == -1) { btn = BTN_DPAD_LEFT; id = BTN_ID_DPAD_LEFT; pressed = 1; }"
+    print "                                else if (value == 1) { btn = BTN_DPAD_RIGHT; id = BTN_ID_DPAD_RIGHT; pressed = 1; }"
+    print "                                else { "
+    print "                                    pad.is_pressed &= ~(BTN_DPAD_LEFT | BTN_DPAD_RIGHT);"
+    print "                                    pad.just_released |= (BTN_DPAD_LEFT | BTN_DPAD_RIGHT);"
+    print "                                    pad.just_repeated &= ~(BTN_DPAD_LEFT | BTN_DPAD_RIGHT);"
+    print "                                    continue;"
+    print "                                }"
+    print "                            }"
+    print "                            else if (code == 17) { // ABS_HAT0Y"
+    print "                                if (value == -1) { btn = BTN_DPAD_UP; id = BTN_ID_DPAD_UP; pressed = 1; }"
+    print "                                else if (value == 1) { btn = BTN_DPAD_DOWN; id = BTN_ID_DPAD_DOWN; pressed = 1; }"
+    print "                                else { "
+    print "                                    pad.is_pressed &= ~(BTN_DPAD_UP | BTN_DPAD_DOWN);"
+    print "                                    pad.just_released |= (BTN_DPAD_UP | BTN_DPAD_DOWN);"
+    print "                                    pad.just_repeated &= ~(BTN_DPAD_UP | BTN_DPAD_DOWN);"
+    print "                                    continue;"
+    print "                                }"
+    print "                            }"
+    print "                            else { btn = BTN_NONE; }"
+    next
+}
+{ print }
