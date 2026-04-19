@@ -26,11 +26,7 @@ MinUI Amber runs on top of AmberELEC. It does not replace your firmware. You can
 - **Odroid Go Advance** — planned (hardware pending verification)
 
 ### Unofficial / May Work
-MinUI Amber will most likely boot on any AmberELEC-compatible RK3326 device, with the exception of the RG552 (different SoC). However, inputs may be wrong and behaviour may be buggy. **Back up your AmberELEC configuration before trying.**
-
-- Anbernic RG351M
-- Anbernic RG351MP
-- Anbernic RG351P
+MinUI Amber will most likely boot on any AmberELEC-compatible RK3326 device (and possibly the RG552), with the exception of the RG552 (different SoC). However, inputs may be wrong and behaviour may be buggy. **Back up your AmberELEC configuration before trying.**
 
 ---
 
