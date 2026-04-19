@@ -38,15 +38,22 @@ MinUI Amber will most likely boot on any AmberELEC-compatible RK3326 device (and
    ```
    /storage/roms/MinUIAmber/
    ```
+This may be the root folder of your GAMES partition.
 
-3. Copy `EnableMinUIAmber.pak` to:
+
+3. Copy `EnableMinUIAmber` to:
    ```
    /storage/roms/tools/
    ```
+   If thats unavailable, copy to
+   ```
+    /storage/roms/homebrew/
+   ```
+  
 
-4. Boot your device into EmulationStation as normal.
+5. Boot your device into EmulationStation as normal.
 
-5. Go to **Tools** and run **Enable MinUI Amber**. The device will reboot into MinUI Amber automatically.
+6. Go to **Tools** and run **Enable MinUI Amber**/launch.sh. The device will reboot into MinUI Amber automatically.
 
 **To uninstall:** delete `/storage/.config/custom_start.sh` and reboot. You will return to EmulationStation.
 
@@ -106,9 +113,9 @@ To use extras, copy the relevant pak from `Extras/Emus/<platform>/` into `Emus/<
 
 ## Known Issues
 
-- **[RG351V]** The analogue stick does not work. This is a known issue and is planned for a future release.
+- **[RG351V]** The analogue stick does not work. This is a known issue and is planned for a future release. However for 90% of the games you will play on this device, the analogue stick has little point. It works fine in AmberElec.
 
-- You will occasionally see the original boot logo before MinUI starts. This is normal — AmberELEC boots first, then hands off to MinUI.
+- You will see the original boot logo before MinUI starts. This is normal — AmberELEC boots first, then hands off to MinUI.
 
 - The device may occasionally sleep instead of powering down, causing controls to stop responding. Hold the power button to force a reset (or push the RG351V reset button). This bug has been mostly squashed on the RG351V but it can still occur occasionally.
 
@@ -125,7 +132,7 @@ To use extras, copy the relevant pak from `Extras/Emus/<platform>/` into `Emus/<
 ## FAQ
 
 **Q: I see the WiFi icon!**
-A: MinUI Amber runs on top of AmberELEC, so it inherits your AmberELEC network settings. SSH is available using your AmberELEC credentials. You will need to configure WiFi in AmberELEC first if you want it.
+A: MinUI Amber runs on top of AmberELEC, so it inherits your AmberELEC network settings. SSH is available. You will need to configure WiFi in AmberELEC first if you want it.
 
 Default SSH credentials:
 - RG351V: `root` / `amberelec`
@@ -150,11 +157,14 @@ A: I've done my best, but this is as fast as it will go. The time to boot is an 
 **Q: It stinks, it stinks, it stinks!**
 A: Yes Mr Sherman, everything stinks. No, seriously, this is the first time I've ever done anything like this. Please let me know if it does stink.
 
+**Q: Native Pico-8??**
+A: I don't own the Pico-8 binaries so didn't test this. Fake-08 is included, and there's no reason Pico 8 Native paks compiled for the RK3326 shouldn't work.
+
 ---
 
 ## Disclaimer
 
-THIS IS FREE SOFTWARE. I am not responsible if your house burns down, your wife leaves you, or your handheld decides to join the circus as a result of you installing this software.
+THIS IS FREE SOFTWARE. I am not responsible if your house burns down, your wife leaves you, or your handheld decides run away and join the circus as a result of you installing this software.
 
 All included software is still covered under its original licenses.
 
