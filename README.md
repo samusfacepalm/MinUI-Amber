@@ -92,6 +92,8 @@ The `Extras/` folder contains additional emulator paks for less common systems:
 
 To use extras, copy the relevant pak from `Extras/Emus/<platform>/` into `Emus/<platform>/`, and create a matching folder in `Roms/` if needed. Extras are unsupported — your mileage may vary.
 
+Additionally, any 64-bit libretro core from other MinUI versions should work fine. 
+
 ---
 
 ## Controls
