@@ -81,6 +81,7 @@ Place your ROMs in the matching folder inside `MinUIAmber/Roms/`:
 
 If you already have ROMs set up in AmberELEC, a migration tool is available in MinUI Tools to move them to the correct folders automatically.
 Native PICO-8 is available seperately. Splore requires your own PICO-8 binaries in the BIOS folder. Replace fake-08 with native Pico-8.
+Playstation is not included as the Retro Pixel Pocket does not have L2 or R2 available. 
 
 ---
 
