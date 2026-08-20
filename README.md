@@ -9,7 +9,7 @@ However, unlike original MinUI, this is designed to work with a single SD card. 
 
 If you want those features — it's only a tool away. MinUI Amber comes with Return to EmulationStation, where you can use the full AmberELEC environment. The device will still boot into MinUI next boot.
 
-MinUI Amber runs on top of AmberELEC — KNULLI on the V90S. It does not replace your firmware. You can return to EmulationStation at any time.
+MinUI Amber runs on top of AmberELEC. It runs over the top of KNULLI on the V90S. It does not replace your firmware. You can return to EmulationStation at any time.
 
 ---
 
@@ -71,8 +71,8 @@ Place your ROMs in the matching folder inside `MinUIAmber/Roms/`:
 | Folder | System |
 |--------|--------|
 | `Famicom (NES)` | NES and Famicom Disk System |
-| `Game Boy Color (MGBA)` | Game Boy and Game Boy Color |
-| `Game Boy Advance (GBA)` | Game Boy Advance (MGBA) |
+| `Game Boy Color (GBC)` | Game Boy and Game Boy Color |
+| `Game Boy Advance (MGBA)` | Game Boy Advance (MGBA) |
 | `Game Gear (GG)` | Sega Game Gear |
 | `Neo Geo Pocket (NGP)` | Neo Geo Pocket |
 | `Neo Geo Pocket Color (NGPC)` | Neo Geo Pocket Color |
@@ -84,12 +84,16 @@ Place your ROMs in the matching folder inside `MinUIAmber/Roms/`:
 | `SG-1000 (SG1000)` | Sega SG-1000 |
 | `Super Game Boy (SGB)` | Super Game Boy enhanced games |
 | `Super Nintendo Entertainment System (SUPA)` | SNES |
+| `Playstation`| PS1 |
+| `Portmaster` | Portmaster |
+
+Please note MinUI Amber does not include GPSP or Gambatte. MGBA is used for all Gameboy emulation.
 
 > The name in parentheses must match the pak name in `Emus/` exactly — that's how MinUI picks the emulator. The text before the parentheses is what shows in the menu, so name that part whatever you like.
 
 Native PICO-8 is available separately. Splore requires your own PICO-8 binaries in the BIOS folder. Replace fake-08 with native PICO-8.
 
-Playstation is not included as the Retro Pixel Pocket does not have L2 or R2 available.
+Playstation is not included on the Retro Pixel Pocket as it does not have L2 or R2 available.
 
 ---
 
@@ -127,36 +131,23 @@ Additionally, any 64-bit libretro core from other MinUI versions should work fin
 
 - You will see the original boot logo before MinUI starts. This is normal — AmberELEC boots first, then hands off to MinUI.
 
-- If the device loses power unexpectedly while in a game, progress since your last save state will be lost. Use the in-game menu (Menu button) to save regularly.
-
 - This version differs from stock MinUI in its Game Boy handling. MGBA is used for all Game Boy systems. This lets you do things like run Super Game Boy Colour mode in GBC games, have better palette access, and so on. SGB is still included separately for games you want to play with borders, games that are specifically SGB enhanced, hacks, or if you want to lose the use of your eyes gazing upon the beauty of Metroid 2's built-in palette on the SGB.
 
-- **[RPP]** Controls can occasionally stop responding until the power switch is briefly slid. This is not a hardware bug: AmberELEC's power-key handling suspends the device when the power slider emits a stray key event, and sliding it again resumes it. The RG351V build disables that handling; the fix is not in the RPP build, because the RPP launch script is kept close to the verified-working v0.1 original. Sliding the power switch again is the workaround.
+- **[RPP]** Controls can occasionally stop responding when the device goes into standby until the power switch is briefly slid. 
 
-- **Don't sell it.** The bundled libretro cores carry their own licences and some restrict commercial use. See `THIRD-PARTY.md`.
 
 ---
 
 ## FAQ
 
 **Q: I see the WiFi icon!**
-A: MinUI Amber runs on top of AmberELEC, so it inherits your AmberELEC network settings. You will need to configure WiFi in AmberELEC first if you want it.
+A: MinUI Amber runs on top of AmberELEC and KNULLI so it inherits your network settings. You will need to configure WiFi in AmberELEC/KNULLI first if you want it.
 
 **Q: Can I still use EmulationStation?**
 A: Yes. Run "Return to EmulationStation" from MinUI Tools at any time — that is a one-off trip, and the next boot goes back to MinUI. To make ES your default again for good, run **Ports → Disable MinUI Amber** from EmulationStation.
 
-**Q: Will my AmberELEC saves and settings be affected?**
+**Q: Will my saves and settings be affected?**
 A: No. MinUI Amber stores its data in `/storage/roms/MinUIAmber/` and does not touch your AmberELEC configuration.
-
-**Q: Any changes from stock MinUI?**
-A: Yes. MinUI Amber includes platform-specific fixes for AmberELEC:
-- Audio output configured for hardware compatibility
-- Button mappings adjusted for RG351V and RPP hardware
-- Boot integration via AmberELEC's `custom_start.sh` hook, toggled from the Ports menu
-- Service masking for faster boot times
-
-**Q: It takes ages to boot???**
-A: I've done my best, but this is as fast as it will go. The time to boot is an AmberELEC thing, and unless I spent a month gutting it (at which point I would be better off porting MOSS to these devices), it ain't gonna happen.
 
 **Q: Native Pico-8??**
 A: Available as a separate add-on. You supply your own PICO-8 binaries — I'm not shipping software I'd have to pirate to give you. Drop them in the BIOS folder and Splore works. Fake-08 is still included and still the default. The add-on was built and tested on the Retro Pixel Pocket; there's no reason a PICO-8 Native pak compiled for the RK3326 shouldn't work elsewhere, but it hasn't been tried.
@@ -185,20 +176,12 @@ A: Yes Mr Sherman, everything stinks. No, seriously, this is the first time I've
 - Brightness wheel now works.
 
 **V90S**
-- Initial support. Port of opportunity.
+- Initial support. Port of opportunity. No issues in my limited testing.
 
 ### v0.1
 - Initial release.
 
 ---
-
-## Building it yourself
-
-Source, repository layout and the docker build recipe for all three platforms:
-[docs/DEVELOPING.md](docs/DEVELOPING.md).
-
----
-
 ## Disclaimer
 
 THIS IS FREE SOFTWARE. I am not responsible if your house burns down, your wife leaves you, or your handheld decides to run away and join the circus as a result of you installing this software.
@@ -216,3 +199,4 @@ All included software is still covered under its original licenses.
 
 MinUI Amber port by MinUI Installer
 Built on AmberELEC — https://amberelec.org
+Built on KNULLI - Knulli.org
