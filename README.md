@@ -84,8 +84,8 @@ Place your ROMs in the matching folder inside `MinUIAmber/Roms/`:
 | `SG-1000 (SG1000)` | Sega SG-1000 |
 | `Super Game Boy (SGB)` | Super Game Boy enhanced games |
 | `Super Nintendo Entertainment System (SUPA)` | SNES |
-| `Playstation`| PS1 |
-| `Portmaster` | Portmaster |
+| `Playstation (PS)`| PS1 |
+| `Portmaster (PORTS)` | Portmaster |
 
 Please note MinUI Amber does not include GPSP or Gambatte. MGBA is used for all Gameboy emulation.
 
