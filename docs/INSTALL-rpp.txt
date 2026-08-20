@@ -35,6 +35,11 @@ INSTALL
   6. Go to PORTS and run "Enable MinUI Amber".
      The device reboots into MinUI Amber.
 
+UPDATING
+  Extract the new release over the top of your existing MinUIAmber folder,
+  then run "Enable MinUI Amber" from PORTS again to pick up the new start
+  script. Your ROMs, saves and settings are left alone.
+
 TURNING IT OFF
 
   From MinUI:  Tools -> Return to EmulationStation
@@ -45,13 +50,6 @@ TURNING IT OFF
                Nothing is deleted, so PORTS -> "Enable MinUI Amber" brings
                it back whenever you want.
 
-  Over SSH, the same script does all three:
-
-         /storage/roms/MinUIAmber/EnableMinUIAmber.sh on
-         /storage/roms/MinUIAmber/EnableMinUIAmber.sh off
-         /storage/roms/MinUIAmber/EnableMinUIAmber.sh status
-
-  SSH login on the RPP is root / retropixel.
 
 YOUR ROMS
   Put them in MinUIAmber/Roms/ in the matching folder. The tag in

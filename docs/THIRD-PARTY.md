@@ -26,7 +26,8 @@ from that source.
 
 The RG351V and RPP builds ship prebuilt libretro cores under
 `.system/<platform>/cores/` and inside some emulator paks. The V90S build
-ships **no** cores — it uses KNULLI's own at `/usr/lib/libretro`.
+ships none of its own; minarch loads them from the system core path on that
+board, so nothing in that zip needs listing here.
 
 Cores bundled: a5200, bluemsx, cap32, dosbox, fake08, fbneo, fceumm,
 gambatte, gearcoleco, gpsp, handy, mame2003_plus, mednafen_ngp,
@@ -35,14 +36,15 @@ mgba, neocd, pcsx_rearmed, picodrive, pokemini, prboom, prosystem,
 puae2021, race, snes9x, snes9x2005_plus, stella2014, tyrquake, and the VICE
 family (x64, x128, xpet, xplus4, xvic).
 
-Each core is a separate upstream project with its own licence — most are
-GPLv2 or GPLv3, mGBA is MPL-2.0, and a few (MAME 2003-Plus, FinalBurn Neo,
-Snes9x) carry **non-commercial** licences that permit free redistribution but
-forbid selling. Start at https://github.com/libretro for any given core, and
-at https://docs.libretro.com for what each one is.
+Each core is a separate upstream project with its own licence, and those
+licences are not all the same — several are copyleft, and some restrict
+commercial use. The terms for any given core are in its own repository; start
+at https://github.com/libretro, and at https://docs.libretro.com for what each
+core is.
 
-**Consequence: MinUI Amber must not be sold.** Give it away, don't charge for
-it, and don't put it on a card you sell.
+**Consequence: don't sell MinUI Amber**, or put it on a card you sell, without
+checking the terms of every core in the list above first. Giving it away is
+fine.
 
 **GPL source:** these cores are redistributed unmodified from the builds
 shipped by AmberELEC (https://github.com/AmberELEC/AmberELEC) and NextUI.

@@ -5,7 +5,6 @@ PAK_NAME="$(basename "$PAK_DIR")"
 PAK_NAME="${PAK_NAME%.*}"
 
 EMU_EXE=prboom
-CORES_PATH=$(dirname "$0")
 
 ###############################
 
@@ -68,7 +67,7 @@ main() {
         exit 1
     fi
 
-    minarch.elf "$CORES_PATH/${EMU_EXE}_libretro.so" "$ROM"
+    CORE_SO="$CORES_PATH/${EMU_EXE}_libretro.so"; [ -f "$CORE_SO" ] || CORE_SO="$SYSTEM_PATH/cores/${EMU_EXE}_libretro.so"; minarch.elf "$CORE_SO" "$ROM"
 }
 
 main "$@"

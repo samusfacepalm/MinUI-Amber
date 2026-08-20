@@ -1,6 +1,6 @@
 #!/bin/sh
 
-EMU_EXE=mame078plus
+EMU_EXE=mgba
 
 ###############################
 

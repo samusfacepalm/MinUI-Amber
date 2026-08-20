@@ -1,6 +1,6 @@
 #!/bin/sh
 
-EMU_EXE=mednafen_ngp
+EMU_EXE=race
 
 ###############################
 

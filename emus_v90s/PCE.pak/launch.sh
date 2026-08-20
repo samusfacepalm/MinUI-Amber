@@ -1,6 +1,6 @@
 #!/bin/sh
 
-EMU_EXE=pce_fast
+EMU_EXE=mednafen_pce_fast
 
 ###############################
 

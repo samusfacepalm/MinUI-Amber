@@ -59,6 +59,11 @@ INSTALL
   7. Go to PORTS and run "Enable MinUI Amber".
      The device reboots into MinUI Amber.
 
+UPDATING
+  Extract the new release over the top of your existing MinUIAmber folder,
+  then run "Enable MinUI Amber" from PORTS again to pick up the new start
+  script. Your ROMs, saves and settings are left alone.
+
 TURNING IT OFF
 
   From MinUI:  Tools -> Return to EmulationStation
@@ -69,19 +74,8 @@ TURNING IT OFF
                Nothing is deleted, so PORTS -> "Enable MinUI Amber" brings
                it back whenever you want.
 
-  Over SSH, the same script does all three:
-
-         /userdata/roms/MinUIAmber/EnableMinUIAmber.sh on
-         /userdata/roms/MinUIAmber/EnableMinUIAmber.sh off
-         /userdata/roms/MinUIAmber/EnableMinUIAmber.sh status
-
   Enabling writes /userdata/system/custom.sh (backing up any existing one)
   and sets system.es.atstartup 0. Disabling reverses both.
-
-EMULATOR CORES
-  Not shipped. This build uses KNULLI's own cores at /usr/lib/libretro,
-  so the download is small and the cores stay current with KNULLI. All 23
-  emulator paks were checked against a real card.
 
 YOUR ROMS
   Put them in MinUIAmber/Roms/ in the matching folder. The tag in

@@ -38,7 +38,7 @@ export SDL_NOMOUSE=1
 
 # Use KNULLI's own libretro cores rather than shipping our own. They are
 # built against this exact BSP, and there are 100+ of them.
-export CORES_PATH="/usr/lib/libretro"
+export CORES_PATH="$SYSTEM_PATH/cores"
 
 # KNULLI's SDL2 has one video backend ("Mali EGL Video Driver").
 #

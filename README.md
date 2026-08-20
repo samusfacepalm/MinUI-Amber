@@ -1,29 +1,25 @@
 # MinUI Amber v0.2
-### A port of MinUI for AmberELEC on RK3326 handhelds, and for KNULLI on the Powkiddy V90S
+### A port of MinUI for AmberELEC on RK3326 devices, and KNULLI on the V90S
 
 MinUI Amber is more or less intended to be a straight port in the spirit of the original MinUI. Simple UI, simple SD card, a frontend that is designed to get the hell out of your way so you can play games.
 
 This means no boxart, no whizbang super duper high-falutin' handhelds that do your taxes in a KDE desktop environment.
 
-However, unlike original MinUI, this is designed to work with a single SD card. Two-card setups on the RG351V have not been tested, and the RPP only has one slot — and you could fit the entire library of games you'd want to play on these devices onto a single card regardless.
+However, unlike original MinUI, this is designed to work with a single SD card. Two SD card setups on the RG351V have not been tested, and the RPP only has a single slot anyway — and you could fit the entire library of games you'd want to play on these devices on a single card anyway.
 
 If you want those features — it's only a tool away. MinUI Amber comes with Return to EmulationStation, where you can use the full AmberELEC environment. The device will still boot into MinUI next boot.
 
-MinUI Amber runs on top of the firmware that is already on your device — AmberELEC on the RG351V and Retro Pixel Pocket, KNULLI on the Powkiddy V90S. It does not replace that firmware. You can return to EmulationStation at any time.
+MinUI Amber runs on top of AmberELEC — KNULLI on the V90S. It does not replace your firmware. You can return to EmulationStation at any time.
 
 ---
 
 ## Supported Devices
 
-| Device | Firmware | Status |
-|--------|----------|--------|
-| Anbernic RG351V | AmberELEC | ✅ Supported |
-| Retro Pixel Pocket (RPP) | AmberELEC | ✅ Supported |
-| Powkiddy V90S | KNULLI | ✅ Initial support — separate build and [its own README](https://github.com/samusfacepalm/MinUI-Amber/blob/main/docs/README-v90s.md) |
-
-The V90S is a different SoC (Allwinner A133P, not RK3326) running a different
-firmware, so it gets its own build and its own documentation. Everything below
-describes the AmberELEC builds unless it says otherwise.
+| Device | Status |
+|--------|--------|
+| Anbernic RG351V | ✅ Supported |
+| Retro Pixel Pocket (RPP) | ✅ Supported |
+| Powkiddy V90S (KNULLI) | ✅ Supported |
 
 ### Planned Devices
 - **Anbernic RG351M** — in progress (requires full platform port, 320x480 display differs from RG351V)
@@ -40,7 +36,7 @@ MinUI Amber will most likely boot on any AmberELEC-compatible RK3326 device, wit
 
 ## Installation
 
-MinUI Amber is switched on and off from EmulationStation's **Ports** menu. The steps are the same on every supported device; only the paths differ. The ones below are AmberELEC's — on the V90S, `/storage/roms` is `/userdata/roms` instead, and the [V90S README](https://github.com/samusfacepalm/MinUI-Amber/blob/main/docs/README-v90s.md) walks through it.
+MinUI Amber is switched on and off from EmulationStation's **Ports** menu. This is the same install path on every supported device.
 
 1. Extract the zip. You get a `MinUIAmber/` folder and a `ports/` folder.
 
@@ -66,18 +62,6 @@ MinUI Amber is switched on and off from EmulationStation's **Ports** menu. The s
 
 **To go back permanently:** from EmulationStation, **Ports → Disable MinUI Amber**. That removes the boot hook, restores the AmberELEC services MinUI Amber masks for faster boot, and reboots into EmulationStation. Nothing is deleted, so **Ports → Enable MinUI Amber** switches back whenever you want.
 
-Over SSH the same script does all three:
-```
-/storage/roms/MinUIAmber/EnableMinUIAmber.sh on
-/storage/roms/MinUIAmber/EnableMinUIAmber.sh off
-/storage/roms/MinUIAmber/EnableMinUIAmber.sh status
-```
-
-If you removed `custom_start.sh` by hand instead of using **Disable MinUI Amber**, restore the services over SSH with:
-```
-systemctl unmask syncthing.service smbd.service nmbd.service webui.service avahi-daemon.service avahi-defaults.service lastgame.service wsdd2.service pulseaudio.service
-```
-
 ---
 
 ## Your ROMs
@@ -88,6 +72,7 @@ Place your ROMs in the matching folder inside `MinUIAmber/Roms/`:
 |--------|--------|
 | `Famicom (NES)` | NES and Famicom Disk System |
 | `Game Boy Color (MGBA)` | Game Boy and Game Boy Color |
+| `Game Boy Advance (GBA)` | Game Boy Advance (MGBA) |
 | `Game Gear (GG)` | Sega Game Gear |
 | `Neo Geo Pocket (NGP)` | Neo Geo Pocket |
 | `Neo Geo Pocket Color (NGPC)` | Neo Geo Pocket Color |
@@ -102,11 +87,9 @@ Place your ROMs in the matching folder inside `MinUIAmber/Roms/`:
 
 > The name in parentheses must match the pak name in `Emus/` exactly — that's how MinUI picks the emulator. The text before the parentheses is what shows in the menu, so name that part whatever you like.
 
-The V90S build adds `Game Boy Advance (GBA)` and `Arcade (MAME)` on top of the list above, because KNULLI carries cores for both.
-
 Native PICO-8 is available separately. Splore requires your own PICO-8 binaries in the BIOS folder. Replace fake-08 with native PICO-8.
 
-PlayStation is not included, as the Retro Pixel Pocket has no L2 or R2.
+Playstation is not included as the Retro Pixel Pocket does not have L2 or R2 available.
 
 ---
 
@@ -142,27 +125,22 @@ Additionally, any 64-bit libretro core from other MinUI versions should work fin
 
 ## Known Issues
 
-- **[RPP]** Controls can stop responding until you slide the power switch. AmberELEC suspends on a stray key event from the slider; sliding it again wakes it. The RG351V build disables that handling, the RPP build doesn't — its launch script stays close to the working v0.1 one.
-- **[V90S]** SNES runs on `snes9x_next` — KNULLI carries no supafaust, which is what MinUI normally uses.
-- **[V90S]** No cores in the zip, it uses KNULLI's. If a KNULLI update drops one, that pak stops working — drop a replacement into `.system/v90s/cores`.
-- **[V90S]** No battery clock. Dates read 1980 until the device has been online.
-- Extras are unsupported. Included because they might work, not because they were tested.
-- You'll see the firmware's boot logo before MinUI. Normal — it boots first, then hands over.
-- Lose power mid-game and you lose everything since your last save state.
-- MGBA runs every Game Boy system, not just GBA — SGB colour modes in GBC games, better palettes. SGB is still there for borders, genuinely SGB-enhanced games, hacks, or losing the use of your eyes gazing upon Metroid 2's built-in palette.
-- **Don't sell it.** MAME 2003-Plus, FinalBurn Neo and Snes9x are non-commercial licences. See `THIRD-PARTY.md`.
+- You will see the original boot logo before MinUI starts. This is normal — AmberELEC boots first, then hands off to MinUI.
+
+- If the device loses power unexpectedly while in a game, progress since your last save state will be lost. Use the in-game menu (Menu button) to save regularly.
+
+- This version differs from stock MinUI in its Game Boy handling. MGBA is used for all Game Boy systems. This lets you do things like run Super Game Boy Colour mode in GBC games, have better palette access, and so on. SGB is still included separately for games you want to play with borders, games that are specifically SGB enhanced, hacks, or if you want to lose the use of your eyes gazing upon the beauty of Metroid 2's built-in palette on the SGB.
+
+- **[RPP]** Controls can occasionally stop responding until the power switch is briefly slid. This is not a hardware bug: AmberELEC's power-key handling suspends the device when the power slider emits a stray key event, and sliding it again resumes it. The RG351V build disables that handling; the fix is not in the RPP build, because the RPP launch script is kept close to the verified-working v0.1 original. Sliding the power switch again is the workaround.
+
+- **Don't sell it.** The bundled libretro cores carry their own licences and some restrict commercial use. See `THIRD-PARTY.md`.
 
 ---
 
 ## FAQ
 
 **Q: I see the WiFi icon!**
-A: MinUI Amber runs on top of AmberELEC, so it inherits your AmberELEC network settings. SSH is available. You will need to configure WiFi in AmberELEC first if you want it.
-
-Default SSH credentials:
-- RG351V: `root` / `amberelec`
-- RPP: `root` / `retropixel`
-- V90S: KNULLI sets its own — look under System Settings → Security in EmulationStation
+A: MinUI Amber runs on top of AmberELEC, so it inherits your AmberELEC network settings. You will need to configure WiFi in AmberELEC first if you want it.
 
 **Q: Can I still use EmulationStation?**
 A: Yes. Run "Return to EmulationStation" from MinUI Tools at any time — that is a one-off trip, and the next boot goes back to MinUI. To make ES your default again for good, run **Ports → Disable MinUI Amber** from EmulationStation.
@@ -174,14 +152,14 @@ A: No. MinUI Amber stores its data in `/storage/roms/MinUIAmber/` and does not t
 A: Yes. MinUI Amber includes platform-specific fixes for AmberELEC:
 - Audio output configured for hardware compatibility
 - Button mappings adjusted for RG351V and RPP hardware
-- Boot integration via AmberELEC's `custom_start.sh` hook, or KNULLI's `custom.sh` on the V90S, toggled from the Ports menu
+- Boot integration via AmberELEC's `custom_start.sh` hook, toggled from the Ports menu
 - Service masking for faster boot times
 
 **Q: It takes ages to boot???**
-A: Less than it did — v0.2 switches off the services MinUI doesn't need, and on the V90S it skips the KNULLI init scripts entirely. But most of what's left is the firmware coming up before MinUI gets a look in, and short of spending a month gutting it (at which point I'd be better off porting MOSS to these devices), that's as fast as it goes.
+A: I've done my best, but this is as fast as it will go. The time to boot is an AmberELEC thing, and unless I spent a month gutting it (at which point I would be better off porting MOSS to these devices), it ain't gonna happen.
 
 **Q: Native Pico-8??**
-A: Available as a separate add-on. You supply your own PICO-8 binaries — I'm not shipping software I'd have to pirate to give you. Drop them in the BIOS folder and Splore works. Fake-08 is still included and still the default. The add-on was built and tested on the Retro Pixel Pocket. A PICO-8 Native pak built for the RK3326 should be fine on the RG351V too, but it hasn't been tried; the V90S is a different SoC and would need its own pak.
+A: Available as a separate add-on. You supply your own PICO-8 binaries — I'm not shipping software I'd have to pirate to give you. Drop them in the BIOS folder and Splore works. Fake-08 is still included and still the default. The add-on was built and tested on the Retro Pixel Pocket; there's no reason a PICO-8 Native pak compiled for the RK3326 shouldn't work elsewhere, but it hasn't been tried.
 
 **Q: It stinks, it stinks, it stinks!**
 A: Yes Mr Sherman, everything stinks. No, seriously, this is the first time I've ever done anything like this. Please let me know if it does stink.
@@ -193,45 +171,21 @@ A: Yes Mr Sherman, everything stinks. No, seriously, this is the first time I've
 ### v0.2
 
 **All devices**
-- **Faster boot.** The heavy services MinUI doesn't need are switched off; on the V90S the unwanted KNULLI init scripts are skipped outright.
-- **PortMaster is now included by default on every device** and appears as a system inside MinUI. Tested with AM2R; other ports should work.
-- **Faster, cleaner shutdown.** Power-off no longer waits on the firmware's own service teardown, and saves are synced first.
-- **Audio fixed.** The output path is initialised when MinUI boots straight into itself, volume scales across the full range, and the sample rate matches the hardware.
-- **Clock works.**
-- **Changed:** install and uninstall now live in EmulationStation's **Ports** menu on every device, instead of Homebrew on AmberELEC. `ports/Enable MinUI Amber.sh` and `ports/Disable MinUI Amber.sh` are thin shims over `MinUIAmber/EnableMinUIAmber.sh`, which also takes `on`, `off` and `status` from a shell.
-- **Added: Disable MinUI Amber — a real uninstall.** It removes the boot hook, restores any `custom_start.sh` it had backed up, and unmasks every service that enabling masked. Previously this meant deleting a file over SSH and unmasking services by hand.
-- **Fixed:** GBC, SNES, Sega CD and SG-1000 games would not launch (rom folder tags did not match the emulator pak names).
-- **Fixed:** CPU speed control did nothing; games can now clock up.
+- Boot time is now much faster.
+- PortMaster support added — tested with AM2R, other games should work. PortMaster comes by default.
+- Shutdown is now much faster and works properly.
+- Audio issues fixed.
+- Clock works.
+- CPU speed control fixed — games can now clock up.
 
 **RG351V**
-- **Analogue stick fixed** — it now works properly. The v0.1 binary was built without the stick support code.
-- **Fixed:** the device could suspend instead of powering off, freezing controls until the power button was used again.
-- **Fixed:** volume buttons required select/start to be held, and the saved volume was overwritten on every boot.
+- Analogue stick fixed and now works perfectly.
 
-**Retro Pixel Pocket**
-- **Brightness wheel now works.**
-- **Added:** Files.pak file manager, and PortMaster (previously RG351V only).
+**RPP**
+- Brightness wheel now works.
 
-**Powkiddy V90S**
-- **Initial support** — a port of opportunity, running on top of KNULLI. See the V90S README.
-
-### v0.1.1
-
-*Never released publicly — these fixes reached you as part of v0.2.*
-
-- **Fixed:** GBC, SNES, Sega CD and SG-1000 games would not launch (rom folder tags did not match the emulator pak names).
-- **Fixed:** [RG351V] analogue stick did not work (the v0.1 binary was built without the stick support code).
-- **Fixed:** [RG351V] device could suspend instead of powering off, freezing controls until the power button was used again — AmberELEC's power-key handling was racing MinUI, and is now disabled while MinUI runs. (Not yet applied to the RPP build.)
-- **Fixed:** [RPP] shutdown could leave the screen frozen on for a minute or two; power-off is now immediate after saves are synced.
-- **Fixed:** [RG351V] volume buttons required select/start to be held (keymon treated the V as a 351P).
-- **Fixed:** audio path was never initialised when booting straight into MinUI (AmberELEC sets it after MinUI's boot hook), and volume now scales correctly across the full range.
-- **Added:** [RG351V] PORTS emulator pak plus the PortMaster payload, so ports appear as a system; MinUI also restarts keymon and clears stray gptokeyb after a port exits.
-- **Fixed:** CPU speed control did nothing (missing governor setup and environment); games can now clock up to 1.5GHz.
-- **Fixed:** installing via SSH (INSTALL.sh) did not disable the heavy AmberELEC services, leaving boot slow; services are also re-disabled every boot so "Return to EmulationStation" can't leave boot slow permanently.
-- **Fixed:** [RG351V] saved volume was overwritten on every boot.
-- **Added:** [RPP] Files.pak file manager (previously RG351V only).
-- **Fixed:** EnableMinUIAmber never appeared in EmulationStation — it shipped as a `.pak` folder, but AmberELEC's Homebrew menu only scans for bare `.sh` files. It's now `EnableMinUIAmber.sh`, placed directly in `/storage/roms/homebrew/`.
-- **Docs:** rom folder table corrected; install/uninstall instructions now match this AmberELEC build (`homebrew`, not `tools`); uninstall instructions restore AmberELEC services.
+**V90S**
+- Initial support. Port of opportunity.
 
 ### v0.1
 - Initial release.
@@ -241,7 +195,7 @@ A: Yes Mr Sherman, everything stinks. No, seriously, this is the first time I've
 ## Building it yourself
 
 Source, repository layout and the docker build recipe for all three platforms:
-[docs/DEVELOPING.md](https://github.com/samusfacepalm/MinUI-Amber/blob/main/docs/DEVELOPING.md).
+[docs/DEVELOPING.md](docs/DEVELOPING.md).
 
 ---
 
