@@ -124,6 +124,12 @@
 #define MAIN_ROW_COUNT 10
 #define PADDING 10
 
+// Reverted 2026-08-19: bumping FONT_* alone (19/16/14/12, was 16/14/12/10)
+// broke the selection highlight/cursor -- PILL_SIZE, BUTTON_SIZE etc are
+// separate chrome constants that don't scale with font point size, so text
+// overflowed them. Needs those touched in lockstep, not just the font, and
+// that needs on-device confirmation before trying again.
+
 ///////////////////////////////
 
 #define SDCARD_PATH "/storage/roms/MinUIAmber"

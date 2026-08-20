@@ -100,10 +100,13 @@ void InitSettings(void) {
 	// system("echo $(< " BRIGHTNESS_PATH ")");
 }
 static inline void SaveSettings(void) {
-	shm_fd = open(SettingsPath, O_WRONLY, 0644);
-	if (shm_fd>=0) {
-		write(shm_fd, &settings, shm_size);
-		
+	// was: open(O_WRONLY) into the shm_fd global and write(&settings) —
+	// couldn't create the file, wrote the pointer not the struct, leaked
+	// the fd, and clobbered the shm handle. Settings never persisted.
+	int fd = open(SettingsPath, O_WRONLY | O_CREAT | O_TRUNC, 0644);
+	if (fd>=0) {
+		write(fd, settings, shm_size);
+		close(fd);
 	}
 }
 void QuitSettings(void) {

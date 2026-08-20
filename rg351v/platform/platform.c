@@ -42,10 +42,14 @@
 #define RAW_POWER	116
 #define RAW_HATY	17
 #define RAW_HATX	16
-#define RAW_LSY         5
+// RG351V single stick: evdev ABS codes 2 (X) and 3 (Y), range 0..4096
+// centered ~2048 (see AmberELEC's RG351V "V Deadzone" evdev patch).
+// The old values (LSY=5, RSX=3, /1800 signed scaling) were copied from
+// the rgb30 and are why the stick never worked.
+#define RAW_LSY         3
 #define RAW_LSX         2
-#define RAW_RSY         4
-#define RAW_RSX         3
+#define RAW_RSY         -2 // no right stick on RG351V
+#define RAW_RSX         -3
 
 #define RAW_MENU1	RAW_L3
 #define RAW_MENU2	RAW_R3
@@ -126,13 +130,13 @@ void PLAT_pollInput(void) {
                         else { btn = BTN_NONE; }
                     }
 			else if (type==EV_ABS) {
-				LOG_info("abs event: %i (%i==%i)\n",code,value,(value * 32767) / 1800);
-				
-					 if (code==RAW_LSX) { pad.laxis.x = (value * 32767) / 1800; PAD_setAnalog(BTN_ID_ANALOG_LEFT, BTN_ID_ANALOG_RIGHT, pad.laxis.x, tick+PAD_REPEAT_DELAY); }
-				else if (code==RAW_LSY) { pad.laxis.y = (value * 32767) / 1800; PAD_setAnalog(BTN_ID_ANALOG_UP,   BTN_ID_ANALOG_DOWN,  pad.laxis.y, tick+PAD_REPEAT_DELAY); }
-				// TODO: these seem to be switched on the rgb30 according to the padtest rom
-				else if (code==RAW_RSX) pad.raxis.y = (value * 32767) / 1800;
-				else if (code==RAW_RSY) pad.raxis.x = (value * 32767) / 1800;
+				// 0..4096 centered ~2048; kernel clamps to roughly 700..3500,
+				// so scale by 1400 to reach full deflection, then clamp
+				#define STICK_SCALE(v) ({ int _s = (((v) - 2048) * 32767) / 1400; if (_s > 32767) _s = 32767; if (_s < -32767) _s = -32767; _s; })
+					 if (code==RAW_LSX) { pad.laxis.x = STICK_SCALE(value); PAD_setAnalog(BTN_ID_ANALOG_LEFT, BTN_ID_ANALOG_RIGHT, pad.laxis.x, tick+PAD_REPEAT_DELAY); }
+				else if (code==RAW_LSY) { pad.laxis.y = STICK_SCALE(value); PAD_setAnalog(BTN_ID_ANALOG_UP,   BTN_ID_ANALOG_DOWN,  pad.laxis.y, tick+PAD_REPEAT_DELAY); }
+				else if (code==RAW_RSX) pad.raxis.y = STICK_SCALE(value);
+				else if (code==RAW_RSY) pad.raxis.x = STICK_SCALE(value);
 				
                             if (code == 16) { // ABS_HAT0X
                                 if (value == -1) { btn = BTN_DPAD_LEFT; id = BTN_ID_DPAD_LEFT; pressed = 1; }
@@ -706,8 +710,11 @@ void PLAT_powerOff(void) {
 	PWR_quit();
 	GFX_quit();
 	
-	system("shutdown");
-	while (1) pause(); // lolwat
+	// plain `shutdown` schedules poweroff at +1 MINUTE (the "screen stays
+	// on for a minute" bug). Signal launch.sh instead, which syncs and
+	// runs `poweroff -f` immediately.
+	system("touch /tmp/poweroff");
+	exit(0);
 }
 
 ///////////////////////////////
@@ -716,10 +723,12 @@ void PLAT_powerOff(void) {
 void PLAT_setCPUSpeed(int speed) {
 	int freq = 0;
 	switch (speed) {
+		// RK3326 OPP table (the old values were RK3566/rgb30 frequencies
+		// the kernel rejects): 408/600/816/1008/1200/1296/1416/1512 MHz
 		case CPU_SPEED_MENU: 		freq =  600000; break;
-		case CPU_SPEED_POWERSAVE:	freq = 1104000; break;
-		case CPU_SPEED_NORMAL: 		freq = 1608000; break;
-		case CPU_SPEED_PERFORMANCE: freq = 1992000; break;
+		case CPU_SPEED_POWERSAVE:	freq = 1008000; break;
+		case CPU_SPEED_NORMAL: 		freq = 1296000; break;
+		case CPU_SPEED_PERFORMANCE: freq = 1512000; break;
 	}
 	putInt(GOVERNOR_PATH, freq);
 }

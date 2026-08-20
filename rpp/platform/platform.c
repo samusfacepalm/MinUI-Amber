@@ -707,8 +707,11 @@ void PLAT_powerOff(void) {
 	PWR_quit();
 	GFX_quit();
 	
-	system("shutdown");
-	while (1) pause(); // lolwat
+	// plain `shutdown` schedules poweroff at +1 MINUTE -- this was the RPP
+	// "screen stays on for a minute" bug. Signal launch.sh instead, which
+	// syncs and runs `poweroff -f` immediately.
+	system("touch /tmp/poweroff");
+	exit(0);
 }
 
 ///////////////////////////////
@@ -717,10 +720,11 @@ void PLAT_powerOff(void) {
 void PLAT_setCPUSpeed(int speed) {
 	int freq = 0;
 	switch (speed) {
+		// RK3326 OPP table (old values were RK3566/rgb30 frequencies)
 		case CPU_SPEED_MENU: 		freq =  600000; break;
-		case CPU_SPEED_POWERSAVE:	freq = 1104000; break;
-		case CPU_SPEED_NORMAL: 		freq = 1608000; break;
-		case CPU_SPEED_PERFORMANCE: freq = 1992000; break;
+		case CPU_SPEED_POWERSAVE:	freq = 1008000; break;
+		case CPU_SPEED_NORMAL: 		freq = 1296000; break;
+		case CPU_SPEED_PERFORMANCE: freq = 1512000; break;
 	}
 	putInt(GOVERNOR_PATH, freq);
 }

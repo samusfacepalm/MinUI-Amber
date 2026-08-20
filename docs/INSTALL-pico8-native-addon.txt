@@ -1,0 +1,48 @@
+===============================================================================
+ MinUI Amber - PICO-8 Native add-on
+===============================================================================
+
+Runs the REAL PICO-8 on the device instead of the fake-08 reimplementation
+that ships in the main release. Splore works, so you can browse and download
+carts from the BBS on the device.
+
+You must supply your own PICO-8. It is commercial software and is not, and
+cannot be, included here. Buy it from https://www.lexaloffle.com/pico-8.php
+and use the Raspberry Pi / Linux ARM build.
+
+WHAT'S IN HERE
+  Bios/PICO-8/                       <- put your pico8_64 binary here
+  Emus/rpp/PICO-8.pak/               <- the launcher
+  Roms/Pico-8 Native (PICO-8)/       <- put .p8 / .p8.png carts here
+
+INSTALL
+  1. Copy Bios/, Emus/ and Roms/ into your existing MinUIAmber folder,
+     merging with what is already there:
+         /storage/roms/MinUIAmber/
+
+  2. Copy pico8_64 (and the rest of the Linux ARM PICO-8 files) into:
+         /storage/roms/MinUIAmber/Bios/PICO-8/
+
+  3. Drop carts into:
+         /storage/roms/MinUIAmber/Roms/Pico-8 Native (PICO-8)/
+
+     To get Splore, put a file with "splore" in its name in that folder -
+     an empty file called "Splore.p8" is enough. The launcher checks the
+     name and starts PICO-8 in Splore mode instead of running the cart.
+
+  4. The folder tag (PICO-8) must keep matching the pak name PICO-8.pak.
+     Rename the part before the parentheses to whatever you like.
+
+DEVICE SUPPORT
+  This add-on was built and tested on the RETRO PIXEL POCKET. The pak sits
+  in Emus/rpp/, and its controller mapping is the RPP's "GO-Super Gamepad"
+  GUID.
+
+  For the RG351V or V90S: copy the PICO-8.pak folder into Emus/rg351v/ or
+  Emus/v90s/ and edit launch.sh - SDL_GAMECONTROLLERCONFIG holds the RPP's
+  pad GUID, and SDL_VIDEODRIVER=kmsdrm is wrong for the V90S, which has only
+  the Mali EGL backend. Untested on both.
+
+  The main release's fake-08 pak, Roms/PICO 8 (P8), is unaffected and keeps
+  working alongside this.
+===============================================================================

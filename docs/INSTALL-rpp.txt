@@ -1,0 +1,72 @@
+===============================================================================
+ MinUI Amber v0.2 - Retro Pixel Pocket (AmberELEC) - Installation
+===============================================================================
+
+WHAT THIS IS
+  MinUI Amber runs on top of AmberELEC. It does not replace your firmware,
+  and it is turned on and off from EmulationStation's PORTS menu.
+
+INSTALL
+
+  1. Extract this zip on your PC.
+
+  2. Put the SD card in your PC. Open the GAMES partition (the one holding
+     the "roms" folder - on AmberELEC this is /storage/roms on the device).
+
+  3. Copy the MinUIAmber folder to the root of that partition, so it sits at:
+
+         /storage/roms/MinUIAmber/
+
+  4. Copy the CONTENTS of the ports folder into the card's existing ports
+     folder, merging with anything already there:
+
+         /storage/roms/ports/Enable MinUI Amber.sh
+         /storage/roms/ports/Disable MinUI Amber.sh
+         /storage/roms/ports/PortMaster/...
+
+     PortMaster is included so ports show up as a system inside MinUI.
+     If you already have PortMaster installed with ports set up, keep
+     your copy - skip the PortMaster folder and copy only the two .sh
+     files.
+
+  5. Eject the card, put it back in the device, and boot into
+     EmulationStation as normal.
+
+  6. Go to PORTS and run "Enable MinUI Amber".
+     The device reboots into MinUI Amber.
+
+TURNING IT OFF
+
+  From MinUI:  Tools -> Return to EmulationStation
+               (this is temporary - the next boot goes back to MinUI)
+
+  Permanently: from EmulationStation, PORTS -> "Disable MinUI Amber".
+               The device reboots into EmulationStation and stays there.
+               Nothing is deleted, so PORTS -> "Enable MinUI Amber" brings
+               it back whenever you want.
+
+  Over SSH, the same script does all three:
+
+         /storage/roms/MinUIAmber/EnableMinUIAmber.sh on
+         /storage/roms/MinUIAmber/EnableMinUIAmber.sh off
+         /storage/roms/MinUIAmber/EnableMinUIAmber.sh status
+
+  SSH login on the RPP is root / retropixel.
+
+YOUR ROMS
+  Put them in MinUIAmber/Roms/ in the matching folder. The tag in
+  parentheses is what picks the emulator and must not be changed; the text
+  before it is just the menu label. See README.txt for the full table.
+
+TROUBLE
+  "Enable MinUI Amber" not in the PORTS menu?
+      The two .sh files must sit DIRECTLY in ports/, not in a subfolder.
+      Refresh the game list (Start -> Game Settings -> Update Gamelists)
+      or reboot.
+
+  It says the payload is missing?
+      The MinUIAmber folder is not at /storage/roms/MinUIAmber/. Check for
+      a doubled folder (MinUIAmber/MinUIAmber/) from the copy.
+
+Full documentation, known issues and FAQ: README.txt
+===============================================================================

@@ -56,6 +56,7 @@ int main (int argc, char *argv[]) {
 	int isrgb30 = 0;
 	int isv10 = 0;
 	int isrg351p = 0;
+	int isrg351v = 0;
 	int _MENU_RAW = CODE_MENU;
 	int _START_RAW = RAW_START;
 	int _SELECT_RAW = RAW_SELECT;
@@ -82,8 +83,13 @@ int main (int argc, char *argv[]) {
 			//is the powkiddy v10
 			isv10 = 1;
 		} else if (access("/dev/input/by-path/platform-ff300000.usb-usb-0:1.2:1.0-event-joystick",F_OK)==0) {
-			//is the rg351p
-			isrg351p = 1;
+			//rg351p and rg351v share the same usb joypad; the rg351v (AmberELEC)
+			//has the rk817 sound event node, the 351p does not
+			if (access("/dev/input/by-path/platform-rk817-sound-event",F_OK)==0) {
+				isrg351v = 1;
+			} else {
+				isrg351p = 1;
+			}
 		}
 	}
 
@@ -124,7 +130,15 @@ int main (int argc, char *argv[]) {
 		_START_RAW = 310;
 		_SELECT_RAW = 311;
 		_MENU_RAW= 800; //no menu button on rg351p
-		menumissing = 1;		
+		menumissing = 1;
+	} else if (isrg351v==1) {
+		//rg351v: F button (313) acts as menu; volume rocker on event2
+		inputs[0] = open("/dev/input/event0", O_RDONLY | O_NONBLOCK | O_CLOEXEC); // power
+		inputs[1] = open("/dev/input/event3", O_RDONLY | O_NONBLOCK | O_CLOEXEC); // controller
+		inputs[2] = open("/dev/input/event2", O_RDONLY | O_NONBLOCK | O_CLOEXEC); // volume +/-
+		_START_RAW = 310;
+		_SELECT_RAW = 311;
+		_MENU_RAW = 313; // F button
 	} else {
 		//r36s
 		inputs[0] = open("/dev/input/event0", O_RDONLY | O_NONBLOCK | O_CLOEXEC); // power

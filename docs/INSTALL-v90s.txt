@@ -1,0 +1,106 @@
+===============================================================================
+ MinUI Amber v0.2 - Powkiddy V90S (KNULLI) - Installation
+===============================================================================
+
+WHAT THIS IS
+  MinUI Amber runs on top of KNULLI on this device. Two reasons: the stock
+  firmware isn't much good, and KNULLI was already on the card being used.
+  It does not replace your firmware, and it is turned on and off from
+  EmulationStation's PORTS menu. Everything it installs lives inside
+  /userdata, so a KNULLI system update - which replaces the read-only rootfs
+  wholesale - cannot remove it.
+
+  IF YOU DON'T ALREADY RUN KNULLI, FLASH YOUR CARD WITH IT FIRST.
+
+  V90S support is new in v0.2 - a port of opportunity. It runs, but it has
+  had far less time on hardware than the RG351V and RPP builds.
+
+INSTALL
+
+  1. Extract this zip on your PC.
+
+  2. Put the SD card in your PC. It shows up as two partitions:
+       BATOCERA  - small FAT32 boot partition
+       SHARE     - the big one, holding "roms", "system", "bios"
+                   (this is /userdata on the device)
+
+  3. Copy the MinUIAmber folder to the root of SHARE, so it sits at:
+
+         /userdata/roms/MinUIAmber/       (SHARE\roms\MinUIAmber)
+
+     NOTE: it goes inside roms, not at the top of the partition.
+
+  4. Copy the CONTENTS of the ports folder into SHARE\roms\ports\,
+     merging with anything already there:
+
+         /userdata/roms/ports/Enable MinUI Amber.sh
+         /userdata/roms/ports/Disable MinUI Amber.sh
+         /userdata/roms/ports/PortMaster/...
+
+     PortMaster is included and shows up as a system inside MinUI. It has
+     not been run on the V90S yet - it was tested with AM2R on the RG351V.
+
+  5. OPTIONAL - faster boot. Copy boot-custom.sh to the root of the
+     BATOCERA partition:
+
+         /boot/boot-custom.sh
+
+     This bind-mounts /dev/null over KNULLI init scripts MinUI does not
+     need (avahi, nfs, dnsmasq, bluetooth, triggerhappy, the battery-saver
+     daemon, EmulationStation's own autostart, and others). It frees RAM on
+     a 1GB device and stops triggerhappy grabbing /dev/input. It is
+     ephemeral - nothing is written to the rootfs. Undo it by deleting the
+     file from the BATOCERA partition on any PC.
+
+     Wifi, ssh, adb, audio, the clock and the share mount are all kept.
+
+  6. Eject the card, put it back in the device, and boot into
+     EmulationStation as normal.
+
+  7. Go to PORTS and run "Enable MinUI Amber".
+     The device reboots into MinUI Amber.
+
+TURNING IT OFF
+
+  From MinUI:  Tools -> Return to EmulationStation
+               (this is temporary - the next boot goes back to MinUI)
+
+  Permanently: from EmulationStation, PORTS -> "Disable MinUI Amber".
+               The device reboots into EmulationStation and stays there.
+               Nothing is deleted, so PORTS -> "Enable MinUI Amber" brings
+               it back whenever you want.
+
+  Over SSH, the same script does all three:
+
+         /userdata/roms/MinUIAmber/EnableMinUIAmber.sh on
+         /userdata/roms/MinUIAmber/EnableMinUIAmber.sh off
+         /userdata/roms/MinUIAmber/EnableMinUIAmber.sh status
+
+  Enabling writes /userdata/system/custom.sh (backing up any existing one)
+  and sets system.es.atstartup 0. Disabling reverses both.
+
+EMULATOR CORES
+  Not shipped. This build uses KNULLI's own cores at /usr/lib/libretro,
+  so the download is small and the cores stay current with KNULLI. All 23
+  emulator paks were checked against a real card.
+
+YOUR ROMS
+  Put them in MinUIAmber/Roms/ in the matching folder. The tag in
+  parentheses is what picks the emulator and must not be changed; the text
+  before it is just the menu label. See README.md for the full table.
+
+TROUBLE
+  "Enable MinUI Amber" not in the PORTS menu?
+      The two .sh files must sit DIRECTLY in roms/ports/, not in a
+      subfolder. Refresh the game list or reboot.
+
+  It says the payload is missing?
+      MinUIAmber is not at /userdata/roms/MinUIAmber/. Check for a doubled
+      folder (MinUIAmber/MinUIAmber/) from the copy.
+
+  Clock is wrong / dates say 1980?
+      There is no battery-backed RTC on this board. KNULLI restores the
+      last saved time at boot and corrects it over wifi once connected.
+
+Full documentation, device notes and known issues: README.md
+===============================================================================

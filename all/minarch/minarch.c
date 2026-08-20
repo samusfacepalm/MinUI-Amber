@@ -45,7 +45,7 @@ enum {
 
 // default frontend options
 static int screen_scaling = SCALE_ASPECT;
-static int screen_sharpness = SHARPNESS_SOFT;
+static int screen_sharpness = SHARPNESS_CRISP; // default was SOFT, changed 2026-08-19 per request
 static int screen_effect = EFFECT_NONE;
 static int prevent_tearing = 1; // lenient
 static int show_debug = 0;
