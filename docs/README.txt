@@ -96,7 +96,7 @@ Place your ROMs in the matching folder inside MinUIAmber/Roms/:
   Folder                            System
   Famicom (NES)                     NES and Famicom Disk System
   Game Boy Color (GBC)              Game Boy and Game Boy Color
-  Game Boy Advance (GBA)            Game Boy Advance (MGBA)
+  Game Boy Advance (MGBA)           Game Boy Advance (MGBA)
   Game Gear (GG)                    Sega Game Gear
   Neo Geo Pocket (NGP)              Neo Geo Pocket
   Neo Geo Pocket Color (NGPC)       Neo Geo Pocket Color
@@ -107,10 +107,9 @@ Place your ROMs in the matching folder inside MinUIAmber/Roms/:
   Sega Master System (SMS)          Sega Master System
   SG-1000 (SG1000)                  Sega SG-1000
   Super Game Boy (SGB)              Super Game Boy enhanced games
-  Super Nintendo Entertainment System (SUPA)
-                                    SNES
-  Sony PlayStation (PS)             PS1
-  Ports (PORTS)                     PortMaster
+  Super Nintendo Entertainment System (SUPA)  SNES
+  Playstation (PS)                  PS1
+  Portmaster (PORTS)                Portmaster
 
 Please note MinUI Amber does not include GPSP or Gambatte. MGBA is used for
 all Gameboy emulation.
@@ -193,19 +192,6 @@ EmulationStation.
 Q: Will my saves and settings be affected?
 A: No. MinUI Amber stores its data in /storage/roms/MinUIAmber/ and does not
 touch your AmberELEC configuration.
-
-Q: Any changes from stock MinUI?
-A: Yes. MinUI Amber includes platform-specific fixes for AmberELEC:
-- Audio output configured for hardware compatibility
-- Button mappings adjusted for RG351V and RPP hardware
-- Boot integration via AmberELEC's custom_start.sh hook, toggled from the
-  Ports menu
-- Service masking for faster boot times
-
-Q: It takes ages to boot???
-A: I've done my best, but this is as fast as it will go. The time to boot is
-an AmberELEC thing, and unless I spent a month gutting it (at which point I
-would be better off porting MOSS to these devices), it ain't gonna happen.
 
 Q: Native Pico-8??
 A: Available as a separate add-on. You supply your own PICO-8 binaries -- I'm
