@@ -1,18 +1,22 @@
 ===============================================================================
  MinUI Amber v0.2
- A port of MinUI for AmberELEC on RK3326 devices
+ A port of MinUI for AmberELEC on RK3326 handhelds,
+ and for KNULLI on the Powkiddy V90S
 ===============================================================================
 
 Supported devices:
-  - Anbernic RG351V
-  - Retro Pixel Pocket (RPP)
-  - Powkiddy V90S (KNULLI) -- initial support, separate build,
-    see its own README
+  - Anbernic RG351V             (AmberELEC)
+  - Retro Pixel Pocket (RPP)    (AmberELEC)
+  - Powkiddy V90S               (KNULLI) -- initial support, separate
+                                build and its own README
+
+The V90S is a different SoC (Allwinner A133P, not RK3326) running a
+different firmware, so it gets its own build and its own documentation.
+Everything below describes the AmberELEC builds unless it says otherwise.
 
 Planned devices:
   - Anbernic RG351M (in progress — requires full platform port due to
     320x480 display, different from the RG351V)
-  - V90S (planned, running BatoCera)
   - Odroid Go Advance (planned, hardware pending verification)
 
 Unofficial / may work:
@@ -47,7 +51,9 @@ environment. The device will still boot into MinUI next boot.
 -------------------------------------------------------------------------------
 
 MinUI Amber is switched on and off from EmulationStation's PORTS menu.
-This is the same install path on every supported device.
+The steps are the same on every supported device; only the paths differ.
+The ones below are AmberELEC's -- on the V90S, /storage/roms is
+/userdata/roms instead, and the V90S README walks through it.
 
 1. Extract the zip. You get a MinUIAmber/ folder and a ports/ folder.
 
@@ -114,14 +120,10 @@ The name in parentheses must match the pak name in Emus/ exactly --
 that is how MinUI picks the emulator. The text before the parentheses
 is what shows in the menu.
 
-If you already have ROMs set up in AmberELEC, a migration tool is available
-in MinUI Tools to move them to the correct folders automatically.
-
 Native PICO-8 is available separately. Splore requires your own PICO-8
 binaries in the BIOS folder. Replace fake-08 with native PICO-8.
 
-Playstation is not included as the Retro Pixel Pocket does not have L2 or
-R2 available.
+PlayStation is not included, as the Retro Pixel Pocket has no L2 or R2.
 
 -------------------------------------------------------------------------------
  EXTRAS
@@ -157,45 +159,46 @@ In games:
  KNOWN ISSUES
 -------------------------------------------------------------------------------
 
-- You will see the original boot logo before MinUI starts.
-  This is normal — AmberELEC boots first, then hands off to MinUI.
+- [RG351V] The Ports install hasn't been tried on the V yet. Works on the
+  RPP and the V90S, same script.
 
-- [RG351V] The device could previously sleep instead of powering down,
-  freezing controls. AmberELEC's power-key handling (logind suspending
-  the device behind MinUI's back) is now overridden at boot. Hold the
-  power button to force a reset if it ever happens anyway. This
-  override does not ship on the RPP build (see below).
+- PortMaster 8.6.1 is bundled, but only exercised with AM2R on the RG351V.
+  Same payload on the other two, untested.
 
-- If the device loses power unexpectedly while in a game, progress since
-  your last save state will be lost. Use the in-game menu (Menu button)
-  to save regularly.
+- [V90S] Neo Geo Pocket, PC Engine, SNES and 2600 couldn't launch before
+  release -- leftover core names from the RG351V build. Fixed, not yet
+  played.
 
-- This version differs from stock MinUI in its Game Boy handling. MGBA
-  is used for all Game Boy systems. This lets you do things like run
-  Super Game Boy Colour mode in GBC games, have better palette access,
-  and so on. SGB is still included separately for games you want to play
-  with borders, games that are specifically SGB enhanced, hacks, or if
-  you want to lose the use of your eyes gazing upon the beauty of
-  Metroid 2's built-in palette on the SGB.
+- [RPP] Controls can stop responding until you slide the power switch.
+  AmberELEC suspends on a stray key event from the slider; sliding it again
+  wakes it. The RG351V build disables that handling, the RPP build doesn't
+  -- its launch script stays close to the working v0.1 one.
 
-- [RPP] Controls can occasionally stop responding until the power switch
-  is briefly slid. This is not a hardware bug: AmberELEC's power-key
-  handling suspends the device when the power slider emits a stray key
-  event, and sliding it again resumes it. The RG351V build disables that
-  handling; the fix is not in the RPP build yet, because the RPP launch
-  script is kept close to the verified-working v0.1 original. Sliding
-  the power switch again is the workaround until it is tested on
-  device.
+- [V90S] SNES runs on snes9x_next. KNULLI has no supafaust. If SNES drags,
+  blame that first.
 
-- [RPP] MinUI would sometimes close but leave the screen on for a
-  minute or two before the device powered off (a slow shutdown sequence
-  in the Funnyplaying firmware). MinUI now forces immediate power-off
-  after syncing saves.
+- [V90S] No cores in the zip, it uses KNULLI's. If a KNULLI update drops
+  one, that pak stops working -- drop a replacement into
+  .system/v90s/cores.
 
-- PortMaster ships as version 8.6.1, straight from the PortMaster
-  project. It has been exercised with AM2R on the RG351V; the RPP and
-  V90S bundles are the same payload but have not been run on those
-  devices yet. Report anything that misbehaves.
+- [V90S] No battery clock. Dates read 1980 until the device has been
+  online.
+
+- Extras are unsupported. Included because they might work, not because
+  they were tested.
+
+- You'll see the firmware's boot logo before MinUI. Normal -- it boots
+  first, then hands over.
+
+- Lose power mid-game and you lose everything since your last save state.
+
+- MGBA runs every Game Boy system, not just GBA -- SGB colour modes in GBC
+  games, better palettes. SGB is still there for borders, genuinely
+  SGB-enhanced games, hacks, or losing the use of your eyes gazing upon
+  Metroid 2's built-in palette.
+
+- Don't sell it. MAME 2003-Plus, FinalBurn Neo and Snes9x are
+  non-commercial licences. See THIRD-PARTY.md.
 
 -------------------------------------------------------------------------------
  FAQ
@@ -209,6 +212,8 @@ A: MinUI Amber runs on top of AmberELEC, so it inherits your AmberELEC
    Default SSH credentials:
      RG351V:  root / amberelec
      RPP:     root / retropixel
+     V90S:    KNULLI sets its own -- see System Settings -> Security
+              in EmulationStation
 
 Q: Can I still use EmulationStation?
 A: Yes. Run "Return to EmulationStation" from MinUI Tools at any time
@@ -224,14 +229,16 @@ Q: Any changes from stock MinUI?
 A: Yes. MinUI Amber includes platform-specific fixes for AmberELEC:
    - Audio output configured for hardware compatibility
    - Button mappings adjusted for RG351V and RPP hardware
-   - Boot integration via AmberELEC's custom_start.sh hook
+   - Boot integration via AmberELEC's custom_start.sh hook, or KNULLI's
+     custom.sh on the V90S
    - Service masking for faster boot times
 
 Q: It takes ages to boot???
-A: I've done my best, but this is as fast as it will go. The time to boot
-   is an AmberELEC thing, and unless I spent a month gutting it (at which
-   point I would be better off porting MOSS to these devices), it ain't
-   gonna happen.
+A: Less than it did -- v0.2 switches off the services MinUI doesn't need,
+   and on the V90S it skips the KNULLI init scripts entirely. But most of
+   what's left is the firmware coming up before MinUI gets a look in, and
+   short of spending a month gutting it (at which point I'd be better off
+   porting MOSS to these devices), that's as fast as it goes.
 
 Q: Native Pico-8??
 A: Available as a separate add-on. You supply your own PICO-8 binaries --
@@ -279,7 +286,7 @@ RG351V
   - Analogue stick fixed -- it now works properly. The v0.1 binary was
     built without the stick support code.
   - Fixed: the device could suspend instead of powering off, freezing
-    controls until the power switch was used again.
+    controls until the power button was used again.
   - Fixed: volume buttons required select/start to be held, and the
     saved volume was overwritten on every boot.
 
@@ -294,12 +301,13 @@ POWKIDDY V90S
     untested.
 
 v0.1.1
+  (never released publicly -- these fixes reached you as part of v0.2)
   - Fixed: GBC, SNES, Sega CD and SG-1000 games would not launch (rom
     folder tags did not match the emulator pak names).
   - Fixed: [RG351V] analogue stick did not work (the v0.1 binary was
     built without the stick support code).
   - Fixed: [RG351V] device could suspend instead of powering off,
-    freezing controls until the power switch/button was used again --
+    freezing controls until the power button was used again --
     AmberELEC's power-key handling was racing MinUI, and is now disabled
     while MinUI runs. (Not yet applied to the RPP build.)
   - Fixed: [RPP] shutdown could leave the screen frozen on for a minute
