@@ -44,6 +44,7 @@ MinUI Amber is switched on and off from EmulationStation's **Ports** menu. This 
    ```
    /storage/roms/MinUIAmber/
    ```
+   This may be the root folder of your GAMES partition.
 
 3. Copy the **contents** of `ports/` into the card's existing ports folder, merging with whatever is already there:
    ```
@@ -99,6 +100,10 @@ Place your ROMs in the matching folder inside `MinUIAmber/Roms/`:
 
 If you already have ROMs set up in AmberELEC, a migration tool is available in MinUI Tools to move them to the correct folders automatically.
 
+Native PICO-8 is available separately. Splore requires your own PICO-8 binaries in the BIOS folder. Replace fake-08 with native PICO-8.
+
+Playstation is not included as the Retro Pixel Pocket does not have L2 or R2 available.
+
 ---
 
 ## Extras
@@ -108,6 +113,8 @@ The `Extras/` folder contains additional emulator paks for less common systems:
 > Amstrad CPC, Atari 2600, Atari 7800, Atari Lynx, Commodore 64, Commodore Amiga, Doom (PRBOOM), Final Burn Neo, MSX, Sega 32X
 
 To use extras, copy the relevant pak from `Extras/Emus/<platform>/` into `Emus/<platform>/`, and create a matching folder in `Roms/` if needed. Extras are unsupported — your mileage may vary.
+
+Additionally, any 64-bit libretro core from other MinUI versions should work fine.
 
 ---
 
@@ -131,7 +138,7 @@ To use extras, copy the relevant pak from `Extras/Emus/<platform>/` into `Emus/<
 
 ## Known Issues
 
-- You will occasionally see the original boot logo before MinUI starts. This is normal — AmberELEC boots first, then hands off to MinUI.
+- You will see the original boot logo before MinUI starts. This is normal — AmberELEC boots first, then hands off to MinUI.
 
 - **[RG351V]** The device could previously sleep instead of powering down, freezing controls. AmberELEC's power-key handling (logind suspending the device behind MinUI's back) is now overridden at boot. Hold the power button to force a reset if it ever happens anyway. This override does not ship on the RPP build (see below).
 
@@ -150,7 +157,7 @@ To use extras, copy the relevant pak from `Extras/Emus/<platform>/` into `Emus/<
 ## FAQ
 
 **Q: I see the WiFi icon!**
-A: MinUI Amber runs on top of AmberELEC, so it inherits your AmberELEC network settings. SSH is available using your AmberELEC credentials. You will need to configure WiFi in AmberELEC first if you want it.
+A: MinUI Amber runs on top of AmberELEC, so it inherits your AmberELEC network settings. SSH is available. You will need to configure WiFi in AmberELEC first if you want it.
 
 Default SSH credentials:
 - RG351V: `root` / `amberelec`
@@ -171,6 +178,9 @@ A: Yes. MinUI Amber includes platform-specific fixes for AmberELEC:
 
 **Q: It takes ages to boot???**
 A: I've done my best, but this is as fast as it will go. The time to boot is an AmberELEC thing, and unless I spent a month gutting it (at which point I would be better off porting MOSS to these devices), it ain't gonna happen.
+
+**Q: Native Pico-8??**
+A: Available as a separate add-on. You supply your own PICO-8 binaries — I'm not shipping software I'd have to pirate to give you. Drop them in the BIOS folder and Splore works. Fake-08 is still included and still the default. The add-on was built and tested on the Retro Pixel Pocket; there's no reason a PICO-8 Native pak compiled for the RK3326 shouldn't work elsewhere, but it hasn't been tried.
 
 **Q: It stinks, it stinks, it stinks!**
 A: Yes Mr Sherman, everything stinks. No, seriously, this is the first time I've ever done anything like this. Please let me know if it does stink.
@@ -233,7 +243,7 @@ Source, repository layout and the docker build recipe for all three platforms:
 
 ## Disclaimer
 
-THIS IS FREE SOFTWARE. I am not responsible if your house burns down, your wife leaves you, or your handheld decides to join the circus as a result of you installing this software.
+THIS IS FREE SOFTWARE. I am not responsible if your house burns down, your wife leaves you, or your handheld decides to run away and join the circus as a result of you installing this software.
 
 All included software is still covered under its original licenses.
 

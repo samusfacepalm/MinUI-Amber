@@ -53,6 +53,7 @@ This is the same install path on every supported device.
 
 2. Copy the MinUIAmber/ folder to your SD card so it sits at:
      /storage/roms/MinUIAmber/
+   This may be the root folder of your GAMES partition.
 
 3. Copy the CONTENTS of ports/ into the card's existing ports folder,
    merging with whatever is already there:
@@ -116,6 +117,12 @@ is what shows in the menu.
 If you already have ROMs set up in AmberELEC, a migration tool is available
 in MinUI Tools to move them to the correct folders automatically.
 
+Native PICO-8 is available separately. Splore requires your own PICO-8
+binaries in the BIOS folder. Replace fake-08 with native PICO-8.
+
+Playstation is not included as the Retro Pixel Pocket does not have L2 or
+R2 available.
+
 -------------------------------------------------------------------------------
  EXTRAS
 -------------------------------------------------------------------------------
@@ -128,6 +135,9 @@ The Extras/ folder contains additional emulator paks for less common systems:
 To use extras, copy the relevant pak from Extras/Emus/<platform>/ into
 Emus/<platform>/, and create a matching folder in Roms/ if needed.
 Extras are unsupported — your mileage may vary.
+
+Additionally, any 64-bit libretro core from other MinUI versions should
+work fine.
 
 -------------------------------------------------------------------------------
  CONTROLS
@@ -147,7 +157,7 @@ In games:
  KNOWN ISSUES
 -------------------------------------------------------------------------------
 
-- You will occasionally see the original boot logo before MinUI starts.
+- You will see the original boot logo before MinUI starts.
   This is normal — AmberELEC boots first, then hands off to MinUI.
 
 - [RG351V] The device could previously sleep instead of powering down,
@@ -193,7 +203,7 @@ In games:
 
 Q: I see the WiFi icon!
 A: MinUI Amber runs on top of AmberELEC, so it inherits your AmberELEC
-   network settings. SSH is available using your AmberELEC credentials.
+   network settings. SSH is available.
    You will need to configure WiFi in AmberELEC first if you want it.
 
    Default SSH credentials:
@@ -222,6 +232,14 @@ A: I've done my best, but this is as fast as it will go. The time to boot
    is an AmberELEC thing, and unless I spent a month gutting it (at which
    point I would be better off porting MOSS to these devices), it ain't
    gonna happen.
+
+Q: Native Pico-8??
+A: Available as a separate add-on. You supply your own PICO-8 binaries --
+   I'm not shipping software I'd have to pirate to give you. Drop them in
+   the BIOS folder and Splore works. Fake-08 is still included and still
+   the default. The add-on was built and tested on the Retro Pixel Pocket;
+   there's no reason a PICO-8 Native pak compiled for the RK3326 shouldn't
+   work elsewhere, but it hasn't been tried.
 
 Q: It stinks, it stinks, it stinks!
 A: Yes Mr Sherman, everything stinks. No, seriously, this is the first time
@@ -318,7 +336,8 @@ v0.1
 -------------------------------------------------------------------------------
 
 THIS IS FREE SOFTWARE. I am not responsible if your house burns down, your
-wife leaves you, or your handheld decides to join the circus as a result of
+wife leaves you, or your handheld decides to run away and join
+the circus as a result of
 you installing this software.
 
 All included software is still covered under its original licenses.
