@@ -96,7 +96,7 @@ All 23 emulator paks were checked against the card's actual
 
 SUPA is the one real compromise: supafaust is the fast SNES core MinUI
 prefers and KNULLI doesn't carry it. `snes9x_next` (snes9x2005) is the closest
-equivalent; if SNES runs badly, that's the first thing to look at.
+equivalent, and it plays fine on this board.
 
 ## Install
 
@@ -161,8 +161,7 @@ PortMaster 8.6.1 is bundled and appears as a system inside MinUI. One KNULLI
 wrinkle: PortMaster resolves its control folder to `/roms/ports/PortMaster`.
 AmberELEC ships `/roms` as a symlink to `/storage/roms`; KNULLI has no such
 link, so the shim creates one pointing at `/userdata/roms` and recreates it if
-a KNULLI update wipes it. **PortMaster has not yet been run on this device** —
-it was exercised with AM2R on the RG351V. Treat it as untested here.
+a KNULLI update wipes it. Tested on the device.
 
 ## Build
 

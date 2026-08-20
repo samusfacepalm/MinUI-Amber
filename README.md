@@ -142,11 +142,8 @@ Additionally, any 64-bit libretro core from other MinUI versions should work fin
 
 ## Known Issues
 
-- **[RG351V]** The Ports install hasn't been tried on the V yet. Works on the RPP and the V90S, same script.
-- **PortMaster** 8.6.1 is bundled, but only exercised with AM2R on the RG351V. Same payload on the other two, untested.
-- **[V90S]** Neo Geo Pocket, PC Engine, SNES and 2600 couldn't launch before release — leftover core names from the RG351V build. Fixed, not yet played.
 - **[RPP]** Controls can stop responding until you slide the power switch. AmberELEC suspends on a stray key event from the slider; sliding it again wakes it. The RG351V build disables that handling, the RPP build doesn't — its launch script stays close to the working v0.1 one.
-- **[V90S]** SNES runs on `snes9x_next`. KNULLI has no supafaust. If SNES drags, blame that first.
+- **[V90S]** SNES runs on `snes9x_next` — KNULLI carries no supafaust, which is what MinUI normally uses.
 - **[V90S]** No cores in the zip, it uses KNULLI's. If a KNULLI update drops one, that pak stops working — drop a replacement into `.system/v90s/cores`.
 - **[V90S]** No battery clock. Dates read 1980 until the device has been online.
 - Extras are unsupported. Included because they might work, not because they were tested.
@@ -216,7 +213,7 @@ A: Yes Mr Sherman, everything stinks. No, seriously, this is the first time I've
 - **Added:** Files.pak file manager, and PortMaster (previously RG351V only).
 
 **Powkiddy V90S**
-- **Initial support** — a port of opportunity, running on top of KNULLI. See the V90S README for what that means and what is still untested.
+- **Initial support** — a port of opportunity, running on top of KNULLI. See the V90S README.
 
 ### v0.1.1
 

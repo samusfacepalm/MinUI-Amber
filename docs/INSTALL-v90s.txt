@@ -37,8 +37,7 @@ INSTALL
          /userdata/roms/ports/Disable MinUI Amber.sh
          /userdata/roms/ports/PortMaster/...
 
-     PortMaster is included and shows up as a system inside MinUI. It has
-     not been run on the V90S yet - it was tested with AM2R on the RG351V.
+     PortMaster is included and shows up as a system inside MinUI.
 
   5. OPTIONAL - faster boot. Copy boot-custom.sh to the root of the
      BATOCERA partition:

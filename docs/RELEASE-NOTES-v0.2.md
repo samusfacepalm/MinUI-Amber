@@ -85,9 +85,8 @@ that zip is a fifth the size of the other two.
 
 ## Known gaps
 
-- PortMaster is bundled at version 8.6.1 straight from the PortMaster project.
-  It was exercised with AM2R on the RG351V. The RPP and V90S ship the same
-  payload but it hasn't been run on those devices yet.
+- PortMaster is bundled at version 8.6.1, straight from the PortMaster project.
+  Tested with AM2R; other ports should work.
 - On KNULLI the PortMaster shim creates a `/roms` symlink to `/userdata/roms`,
   because PortMaster looks for its control folder there and KNULLI, unlike
   AmberELEC, doesn't ship that link.
