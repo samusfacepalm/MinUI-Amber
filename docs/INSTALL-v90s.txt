@@ -51,6 +51,10 @@ INSTALL
      ephemeral - nothing is written to the rootfs. Undo it by deleting the
      file from the BATOCERA partition on any PC.
 
+     It only does this while MinUI Amber is enabled. "Disable MinUI Amber"
+     switches it off, so EmulationStation boots normally again even with
+     the file still on the card.
+
      Wifi, ssh, adb, audio, the clock and the share mount are all kept.
 
   6. Eject the card, put it back in the device, and boot into
@@ -74,8 +78,9 @@ TURNING IT OFF
                Nothing is deleted, so PORTS -> "Enable MinUI Amber" brings
                it back whenever you want.
 
-  Enabling writes /userdata/system/custom.sh (backing up any existing one)
-  and sets system.es.atstartup 0. Disabling reverses both.
+  Enabling writes /userdata/system/custom.sh (backing up any existing one),
+  sets system.es.atstartup 0 and creates an empty /boot/minuiamber-enabled
+  marker that arms boot-custom.sh. Disabling reverses all three.
 
 YOUR ROMS
   Put them in MinUIAmber/Roms/ in the matching folder. The tag in

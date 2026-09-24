@@ -24,10 +24,10 @@ from that source.
 
 ## libretro emulator cores
 
-The RG351V and RPP builds ship prebuilt libretro cores under
-`.system/<platform>/cores/` and inside some emulator paks. The V90S build
-ships none of its own; minarch loads them from the system core path on that
-board, so nothing in that zip needs listing here.
+All three builds (RG351V, RPP and V90S) ship prebuilt libretro cores under
+`.system/<platform>/cores/` and inside some emulator paks. Since v0.2 the V90S
+uses these rather than KNULLI's own cores, so the list below covers its zip
+too.
 
 Cores bundled: a5200, bluemsx, cap32, dosbox, fake08, fbneo, fceumm,
 gambatte, gearcoleco, gpsp, handy, mame2003_plus, mednafen_ngp,

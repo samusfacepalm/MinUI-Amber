@@ -111,7 +111,7 @@ Place your ROMs in the matching folder inside MinUIAmber/Roms/:
   Playstation (PS)                  PS1
   Portmaster (PORTS)                Portmaster
 
-Please note MinUI Amber does not include GPSP or Gambatte. MGBA is used for
+Please note MinUI Amber doesn't use GPSP or Gambatte. MGBA is used for
 all Gameboy emulation.
 
 The name in parentheses must match the pak name in Emus/ exactly -- that's how
@@ -149,7 +149,7 @@ In menus:
   D-pad                             Navigate
   A                                 Select / confirm
   B                                 Back / cancel
-  Menu                              Sleep (press) / Power off (hold)
+  Power                             Sleep (press) / Power off (hold)
 
 In games:
   Input                             Action
@@ -190,8 +190,10 @@ default again for good, run Ports -> Disable MinUI Amber from
 EmulationStation.
 
 Q: Will my saves and settings be affected?
-A: No. MinUI Amber stores its data in /storage/roms/MinUIAmber/ and does not
-touch your AmberELEC configuration.
+A: No. MinUI Amber stores its data in /storage/roms/MinUIAmber/ and leaves
+your AmberELEC saves and settings alone. The only system changes are its boot
+hook (backing up any existing custom_start.sh) and a few boot services it
+switches off for speed, and Ports -> Disable MinUI Amber reverses both.
 
 Q: Native Pico-8??
 A: Available as a separate add-on. You supply your own PICO-8 binaries -- I'm

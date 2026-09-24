@@ -1,7 +1,7 @@
 # MinUI Amber v0.2 — Powkiddy V90S (KNULLI)
 
-MinUI as the front end on a Powkiddy V90S running KNULLI, installed entirely
-inside `/userdata` so a KNULLI system update can't remove it.
+MinUI as the front end on a Powkiddy V90S running KNULLI, installed inside
+`/userdata` so a KNULLI system update can't remove it.
 
 **Status: running on hardware.** Video, input, battery and CPU scaling all
 confirmed working from the device's own logs. See *Fixed after first boot* and
@@ -28,7 +28,7 @@ Read out of the card itself (`/boot/batocera` squashfs and
 | Userspace | aarch64 glibc, `/bin/sh` is **dash** |
 | Panel | 640x480 (`lcd_x = <0x280>`, `lcd_y = <0x1e0>`) |
 | Backlight | PWM via the sunxi `/dev/disp` ioctl, 0-255, driven by `/usr/bin/brightness` |
-| Audio | PulseAudio (`pactl`) |
+| Audio | PipeWire (`pactl` talks to it through pipewire-pulse) |
 | SDL2 | 2.30.12, single video backend: "Mali EGL Video Driver" — no KMSDRM, no fbdev, no X11 |
 | Init | sysvinit (`/etc/init.d/S*`), **not** systemd |
 
@@ -54,7 +54,7 @@ by code rather than hardcoding event numbers — the RG351V port lost a whole
 round to guessing those wrong.
 
 Controls: volume rocker alone changes volume; **hotkey + rocker** changes
-brightness; START+SELECT kills a stuck standalone app.
+brightness.
 
 ## What differs from the RG351V/AmberELEC build
 
@@ -66,7 +66,6 @@ All of it follows from the OS, not the hardware:
 | Volume | `amixer` on rk817 `Playback` | `pactl set-sink-volume @DEFAULT_SINK@ N%` |
 | Brightness | `/sys/class/backlight/.../brightness` | `brightness set N` (0-255, `/dev/disp` ioctl) |
 | CPU speed | `scaling_setspeed` + userspace governor | `scaling_max_freq`, works under stock schedutil |
-| Cores | shipped in `.system/<plat>/cores` | KNULLI's own 100+ at `/usr/lib/libretro` |
 | Install root | `/storage/roms/MinUIAmber` | `/userdata/roms/MinUIAmber` |
 
 The CPU frequency table is **read at runtime** from
@@ -78,25 +77,14 @@ so there was nothing to copy.
 to `FIXED_*`, which is what makes minarch fold `SCALE_CROPPED` into
 `SCALE_NATIVE` on a display that can't change mode.
 
-## Core mapping
+## Cores
 
-KNULLI has no `race`, `mednafen_pce_fast`, `mednafen_supafaust` or
-`stella2014`, so those paks were remapped:
-
-| Pak | RG351V core | V90S core |
-|---|---|---|
-| NGP / NGPC | `race` | `mednafen_ngp` |
-| PCE | `mednafen_pce_fast` | `pce_fast` |
-| SUPA | `mednafen_supafaust` | `snes9x_next` |
-| A2600 | `stella2014` | `stella` |
-
-All 23 emulator paks were checked against the card's actual
-`/usr/lib/libretro` — every one resolves. Each pak also falls back to
-`$SYSTEM_PATH/cores` if a KNULLI update ever renames a core.
-
-SUPA is the one real compromise: supafaust is the fast SNES core MinUI
-prefers and KNULLI doesn't carry it. `snes9x_next` (snes9x2005) is the closest
-equivalent, and it plays fine on this board.
+The V90S ships MinUI's own cores in `.system/v90s/cores`, the same set as the
+RG351V and RPP builds, and every emulator pak is byte-identical across the
+three devices. KNULLI's cores in `/usr/lib/libretro` are left to
+EmulationStation. (Early V90S builds pointed `CORES_PATH` at KNULLI's cores
+and remapped NGP/NGPC, PCE, SUPA and A2600 to cores KNULLI carries; that is
+gone.)
 
 ## Install
 
@@ -130,7 +118,8 @@ Then:
 
 5. *Optional, for faster boot:* copy `boot-custom.sh` to the root of the
    **BATOCERA** partition (`/boot/boot-custom.sh`). See *Boot trimming* below.
-   Undo it by deleting the file from any PC.
+   It only acts while MinUI Amber is enabled. Undo it by deleting the file
+   from any PC.
 
 6. Boot to EmulationStation, then **PORTS → Enable MinUI Amber**. That runs the
    script, sets MinUI Amber up for all further boots, and reboots into it.
@@ -139,14 +128,17 @@ To go back: **Ports → Disable MinUI Amber**, or from a shell
 `/userdata/roms/MinUIAmber/EnableMinUIAmber.sh off`. Use `status` instead of
 `off` to see the current state without changing anything.
 
-Enabling does exactly two things, both inside `/userdata`:
+Enabling does exactly three things:
 
 - writes `/userdata/system/custom.sh` (backing up any existing one to
   `custom.sh.pre-minuiamber`)
 - sets `system.es.atstartup 0` in `batocera.conf`
+- creates an empty `/boot/minuiamber-enabled`, which arms the optional
+  `boot-custom.sh` trimmer
 
-Disabling reverses both. Nothing outside `/userdata` is touched, so a KNULLI
-update leaves the install intact — though an update *can* reset
+Disabling reverses all three. Apart from that marker nothing outside
+`/userdata` is touched, so a KNULLI update leaves the install intact — though
+an update *can* reset
 `es.atstartup`, which is why `MinUI.pak/launch.sh` also stops ES defensively
 if it finds it running.
 
@@ -165,18 +157,18 @@ a KNULLI update wipes it. Tested on the device.
 
 ## Build
 
+From the root of this repo, mounted as the container's workspace:
+
 ```
-docker run --rm -v '<path-to>/MinUI-upstream/workspace:/root/workspace' \
+docker run --rm -v '<path-to>/MinUI-Amber:/root/workspace' \
   tg5040-toolchain /bin/bash -lc 'bash /root/workspace/build_v90s.sh'
 ```
 
-Source tree is `~/MinUI-upstream/workspace/v90s` (forked from `rg351v`, which
-already had the right 640x480 geometry). Staging tree is
-`~/MinUIAmber-release/v90s`; `~/stage_v90s.sh` rebuilds it from the rg351v
-tree plus fresh binaries, `~/package_v90s.sh` zips it.
+The `v90s/` platform was forked from `rg351v/`, which already had the right
+640x480 geometry. Staging and zipping the release happen outside this repo.
 
-Note `-mtune=cortex-a53 -march=armv8-a`: the A133P is A53, not the A55 the
-RG351V build targeted.
+Note `-mtune=cortex-a53 -march=armv8-a`: the A133P is 4x Cortex-A53. (The
+RG351V and RPP builds target the RK3326's Cortex-A35.)
 
 ## Boot trimming
 
@@ -188,6 +180,12 @@ rcS's own `[ ! -f "$i" ] && continue` guard skip them without even forking.
 Nothing is modified: bind mounts are ephemeral, cost none of the 100 MB
 overlay budget, and leave the read-only squashfs untouched. **To undo, delete
 the file** — no shell or device access needed.
+
+It only runs while `/boot/minuiamber-enabled` exists. Enabling creates that
+marker and **Disable MinUI Amber** removes it, so a disabled install boots
+stock KNULLI (EmulationStation, hotkeys, battery saver) even with the file
+still on the card. The marker has to live on `/boot` because `/userdata` isn't
+mounted yet when `S00bootcustom` runs.
 
 Disabled: avahi (+setup), nfs, dnsmasq, bluetooth (+name, sixad),
 triggerhappy, rgbled, toggle-switch, stats, debugmount, emulationstation,
@@ -261,8 +259,9 @@ inspection:
    stored level.
 3. **Dim/suspend fight.** KNULLI's battery-saver infers activity from
    `inotifywait -e access /dev/input`, which MinUI's polling doesn't reliably
-   trip, so it dimmed and then suspended a device in active use. Now disabled
-   outright at boot, with the `*.pause` marker kept as a backstop.
+   trip, so it dimmed and then suspended a device in active use. The optional
+   boot trimmer disables it outright while MinUI Amber is enabled, and the
+   `*.pause` marker stands it down on installs without the trimmer.
 
 Also tuned: idle CPU moved off the bottom step (408 MHz was sluggish), and
 the audio sample rate cap raised 44100 → 48000 to match `asound.conf`'s dmix
@@ -270,8 +269,6 @@ slave and PipeWire's graph rate, removing a pointless resample.
 
 ## Still open
 
-- **SNES performance** on `snes9x_next` — KNULLI has no supafaust. First thing
-  to look at if SNES chugs.
 - **Brightness step latency** — one `fork`+`exec` of `brightness` per step. If
   it feels laggy, reimplement the `/dev/disp` ioctl directly.
 - **Wifi** is not configured. `connman` is kept running for it; set it up from

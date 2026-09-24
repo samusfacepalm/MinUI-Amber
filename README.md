@@ -87,7 +87,7 @@ Place your ROMs in the matching folder inside `MinUIAmber/Roms/`:
 | `Playstation (PS)`| PS1 |
 | `Portmaster (PORTS)` | Portmaster |
 
-Please note MinUI Amber does not include GPSP or Gambatte. MGBA is used for all Gameboy emulation.
+Please note MinUI Amber doesn't use GPSP or Gambatte. MGBA is used for all Gameboy emulation.
 
 > The name in parentheses must match the pak name in `Emus/` exactly — that's how MinUI picks the emulator. The text before the parentheses is what shows in the menu, so name that part whatever you like.
 
@@ -117,7 +117,7 @@ Additionally, any 64-bit libretro core from other MinUI versions should work fin
 | D-pad | Navigate |
 | A | Select / confirm |
 | B | Back / cancel |
-| Menu | Sleep (press) / Power off (hold) |
+| Power | Sleep (press) / Power off (hold) |
 
 **In games:**
 | Input | Action |
@@ -147,7 +147,7 @@ A: MinUI Amber runs on top of AmberELEC and KNULLI so it inherits your network s
 A: Yes. Run "Return to EmulationStation" from MinUI Tools at any time — that is a one-off trip, and the next boot goes back to MinUI. To make ES your default again for good, run **Ports → Disable MinUI Amber** from EmulationStation.
 
 **Q: Will my saves and settings be affected?**
-A: No. MinUI Amber stores its data in `/storage/roms/MinUIAmber/` and does not touch your AmberELEC configuration.
+A: No. MinUI Amber stores its data in `/storage/roms/MinUIAmber/` and leaves your AmberELEC saves and settings alone. The only system changes are its boot hook (backing up any existing `custom_start.sh`) and a few boot services it switches off for speed, and **Ports → Disable MinUI Amber** reverses both.
 
 **Q: Native Pico-8??**
 A: Available as a separate add-on. You supply your own PICO-8 binaries — I'm not shipping software I'd have to pirate to give you. Drop them in the BIOS folder and Splore works. Fake-08 is still included and still the default. The add-on was built and tested on the Retro Pixel Pocket; there's no reason a PICO-8 Native pak compiled for the RK3326 shouldn't work elsewhere, but it hasn't been tried.

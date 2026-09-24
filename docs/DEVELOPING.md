@@ -8,7 +8,7 @@ glue that installs them and the documentation that ships with each release.
 | Path | What it is |
 |---|---|
 | `all/` | Upstream MinUI code shared by every platform (minui, minarch, clock, minput, say, syncsettings, common). |
-| `rg351v/` | RG351V platform: `platform/`, `keymon/`, `libmsettings/`, `cores/`, `overclock/`, `boot/`. |
+| `rg351v/` | RG351V platform: `platform/`, `keymon/`, `libmsettings/`, `cores/`, and `show/` (kept for reference, not built). |
 | `rpp/` | Retro Pixel Pocket platform. Same shape; the RPP has no dedicated code path and falls into the shared r36s GPIO branch. |
 | `v90s/` | Powkiddy V90S platform, forked from `rg351v/` (also 640x480). Built for KNULLI, not AmberELEC. |
 | `emus_<device>/` | The emulator paks as shipped in that device's zip, under `MinUIAmber/Emus/<device>/`. |
@@ -16,7 +16,7 @@ glue that installs them and the documentation that ships with each release.
 | `extras_emus/` | Paks that ship in `MinUIAmber/Extras/`, plus older paks kept for reference. Unsupported. |
 | `installer/` | The boot glue: enable/disable scripts, the EmulationStation Ports entries, the PortMaster shims, and each device's `MinUI.pak/launch.sh`. |
 | `docs/` | Per-device INSTALL text, the plain-text README, the V90S README and the release notes. |
-| `minui_pak_launch.sh` | The AmberELEC `MinUI.pak/launch.sh` as shipped. The KNULLI one is `installer/v90s/minui_pak_launch.sh`. |
+| `minui_pak_launch.sh` | The AmberELEC `MinUI.pak/launch.sh` as shipped, for both the RG351V and the RPP: it takes the platform from the `.system/<platform>` folder it is installed in. The KNULLI one is `installer/v90s/minui_pak_launch.sh`. |
 
 ## Building
 
@@ -52,7 +52,13 @@ Notes that cost time to learn:
   on a panel that cannot change mode.
 - `show` is not built on any of these platforms; they ship the prebuilt
   `showpng.elf`.
-- On the V90S, `/bin/sh` is dash — `&>` is a syntax error there, not a
-  shorthand. Pak scripts use `> file 2>&1`.
+- On the V90S, `/bin/sh` is dash, where `&>` is not a redirect at all:
+  `cmd &> file` runs `cmd` in the background and truncates `file`, so a pak
+  returns at once and MinUI relaunches on top of the running game. Pak
+  scripts use `> file 2>&1`.
+- `-march` matters. The RG351V and RPP are RK3326 (Cortex-A35, plain
+  ARMv8-A) and the V90S is an A133P (Cortex-A53). The rgb30's
+  `-march=armv8.2-a` lets gcc emit ARMv8.1 atomics (`ldaddal`) that the A35
+  cannot execute.
 - MinUI maps a rom folder's `(TAG)` to `Emus/<platform>/TAG.pak` exactly. A
   mismatch means the game simply will not launch.
