@@ -1,5 +1,5 @@
 #!/bin/bash
-# Roms/Ports (PORTS)/PortMaster.sh  —  AmberELEC (RG351V / RPP)
+# Roms/Portmaster (PORTS)/PortMaster.sh  —  AmberELEC (RG351V / RPP)
 #
 # Thin shim so PortMaster's own UI shows up as an entry inside MinUI. The real
 # payload lives at the standard AmberELEC path /storage/roms/ports/PortMaster,

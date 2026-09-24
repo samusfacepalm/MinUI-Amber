@@ -1,5 +1,5 @@
 #!/bin/sh
-# PORTS.pak launch.sh — runs .sh entries from Roms/Ports (PORTS)/.
+# PORTS.pak launch.sh — runs .sh entries from Roms/Portmaster (PORTS)/.
 # Invoked directly (not via `sh`) so each port's own shebang (#!/bin/bash,
 # required by PortMaster's control.txt which uses bash-only `source`) is honored.
 

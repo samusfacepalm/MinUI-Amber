@@ -1,4 +1,4 @@
-# MinUI Amber v0.2
+# MinUI Amber v0.2.1
 ### A port of MinUI for AmberELEC on RK3326 devices, and KNULLI on the V90S
 
 MinUI Amber is more or less intended to be a straight port in the spirit of the original MinUI. Simple UI, simple SD card, a frontend that is designed to get the hell out of your way so you can play games.
@@ -158,6 +158,25 @@ A: Yes Mr Sherman, everything stinks. No, seriously, this is the first time I've
 ---
 
 ## Changelog
+
+### v0.2.1
+
+**All devices**
+- PlayStation L2 and R2 now work — before, they couldn't even be mapped.
+- Return to EmulationStation no longer leaves MinUI's volume and brightness keys running underneath ES.
+- Rom folders now match this README: Game Boy Advance (MGBA), Playstation (PS), Portmaster (PORTS).
+
+**RG351V and RPP**
+- Disable MinUI Amber gives AmberELEC its suspend back. v0.2 switched it off for good; the first boot of this version clears that up.
+- Return to EmulationStation brings back suspend, the power button and the services you had turned on (Samba, the web UI and so on).
+- ROMs with double spaces in their names now launch.
+
+**RPP**
+- Files now uses the whole 720x720 screen.
+
+**V90S**
+- Disable MinUI Amber no longer boots to a black screen when the optional boot-custom.sh is installed.
+- Ports, PortMaster, and EmulationStation after Return to EmulationStation, no longer run at the menu's CPU speed.
 
 ### v0.2
 

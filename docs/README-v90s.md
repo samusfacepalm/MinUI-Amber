@@ -1,4 +1,4 @@
-# MinUI Amber v0.2 — Powkiddy V90S (KNULLI)
+# MinUI Amber v0.2.1 — Powkiddy V90S (KNULLI)
 
 MinUI as the front end on a Powkiddy V90S running KNULLI, installed inside
 `/userdata` so a KNULLI system update can't remove it.
@@ -146,7 +146,7 @@ if it finds it running.
 
 Same two-part scheme as the RG351V build: the real payload and launch script
 live at `/userdata/roms/ports/` so ES's own Ports menu works too, and MinUI
-lists thin `exec` shims under `Roms/Ports (PORTS)/`. A port with no shim is
+lists thin `exec` shims under `Roms/Portmaster (PORTS)/`. A port with no shim is
 invisible in MinUI.
 
 PortMaster 8.6.1 is bundled and appears as a system inside MinUI. One KNULLI
@@ -185,7 +185,8 @@ It only runs while `/boot/minuiamber-enabled` exists. Enabling creates that
 marker and **Disable MinUI Amber** removes it, so a disabled install boots
 stock KNULLI (EmulationStation, hotkeys, battery saver) even with the file
 still on the card. The marker has to live on `/boot` because `/userdata` isn't
-mounted yet when `S00bootcustom` runs.
+mounted yet when `S00bootcustom` runs. A v0.2 `boot-custom.sh`, which ignores
+the marker, is set aside as `boot-custom.sh.v0.2-off` when you disable.
 
 Disabled: avahi (+setup), nfs, dnsmasq, bluetooth (+name, sixad),
 triggerhappy, rgbled, toggle-switch, stats, debugmount, emulationstation,

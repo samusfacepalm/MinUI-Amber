@@ -1,5 +1,5 @@
 ===============================================================================
- MinUI Amber v0.2 - Anbernic RG351V (AmberELEC) - Installation
+ MinUI Amber v0.2.1 - Anbernic RG351V (AmberELEC) - Installation
 ===============================================================================
 
 WHAT THIS IS
@@ -37,7 +37,8 @@ INSTALL
 UPDATING
   Extract the new release over the top of your existing MinUIAmber folder,
   then run "Enable MinUI Amber" from PORTS again to pick up the new start
-  script. Your ROMs, saves and settings are left alone.
+  script (from MinUI, Tools -> Return to EmulationStation gets you there).
+  Your ROMs, saves and settings are left alone.
 
 TURNING IT OFF
 

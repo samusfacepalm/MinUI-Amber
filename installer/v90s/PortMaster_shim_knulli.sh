@@ -1,5 +1,5 @@
 #!/bin/bash
-# Roms/Ports (PORTS)/PortMaster.sh  —  KNULLI (V90S)
+# Roms/Portmaster (PORTS)/PortMaster.sh  —  KNULLI (V90S)
 #
 # Thin shim so PortMaster's own UI shows up as an entry inside MinUI. The real
 # payload lives at the standard KNULLI path /userdata/roms/ports/PortMaster,

@@ -1,5 +1,5 @@
 ===============================================================================
- MinUI Amber v0.2 - Powkiddy V90S (KNULLI) - Installation
+ MinUI Amber v0.2.1 - Powkiddy V90S (KNULLI) - Installation
 ===============================================================================
 
 WHAT THIS IS
@@ -66,7 +66,11 @@ INSTALL
 UPDATING
   Extract the new release over the top of your existing MinUIAmber folder,
   then run "Enable MinUI Amber" from PORTS again to pick up the new start
-  script. Your ROMs, saves and settings are left alone.
+  script (from MinUI, Tools -> Return to EmulationStation gets you there).
+  Your ROMs, saves and settings are left alone.
+
+  If you installed boot-custom.sh, copy the new one over it on the BATOCERA
+  partition before running Enable again.
 
 TURNING IT OFF
 
