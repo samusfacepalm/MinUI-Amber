@@ -24,24 +24,31 @@ BOOT_MARKER="/boot/minuiamber-enabled"
 
 log() { echo "[MinUIAmber] $*"; }
 
-# set_boot_marker on|off -- /boot is KNULLI's FAT32 partition, mounted
-# read-only, so remount around the change (and leave it as we found it).
-set_boot_marker() {
+# boot_rw CMD... -- run CMD with /boot writable. It is KNULLI's FAT32
+# partition, mounted read-only, so remount around the change (and leave it
+# as we found it).
+boot_rw() {
     local was_rw=0 rc
     grep -qs '^[^ ]* /boot [^ ]* rw[, ]' /proc/mounts && was_rw=1
     if [ $was_rw = 0 ] && ! mount -o remount,rw /boot 2>/dev/null; then
         log "WARNING: could not remount /boot read-write"
         return 1
     fi
-    if [ "$1" = on ]; then
-        touch "$BOOT_MARKER"
-    else
-        rm -f "$BOOT_MARKER"
-    fi
+    "$@"
     rc=$?
     sync
     [ $was_rw = 1 ] || mount -o remount,ro /boot 2>/dev/null
     return $rc
+}
+
+# Is /boot/boot-custom.sh our trimmer (rather than someone else's script)?
+our_boot_custom() {
+    [ -f "$BOOT_CUSTOM" ] && grep -q "MinUIAmber boot trimmer" "$BOOT_CUSTOM" 2>/dev/null
+}
+
+# Our trimmer, but from v0.2: it trims on every boot and ignores the marker.
+old_boot_custom() {
+    our_boot_custom && ! grep -q "minuiamber-enabled" "$BOOT_CUSTOM" 2>/dev/null
 }
 
 status() {
@@ -58,6 +65,8 @@ status() {
     [ -f "$MINUI_LAUNCH" ] && log "payload           = found" || log "payload           = MISSING ($MINUI_LAUNCH)"
     if [ ! -f "$BOOT_CUSTOM" ]; then
         log "boot-custom.sh    = not installed"
+    elif old_boot_custom; then
+        log "boot-custom.sh    = installed, v0.2 (always active; replace it)"
     elif [ -f "$BOOT_MARKER" ]; then
         log "boot-custom.sh    = installed, active"
     else
@@ -86,7 +95,7 @@ enable_minui() {
     batocera-settings-set system.es.atstartup 0
 
     # Arm the optional boot trimmer. Harmless if it isn't installed.
-    set_boot_marker on || log "The optional boot-custom.sh trimmer will stay inactive."
+    boot_rw touch "$BOOT_MARKER" || log "The optional boot-custom.sh trimmer will stay inactive."
 
     find "$MINUI_ROOT" -name '*.sh' -exec chmod +x {} \; 2>/dev/null
     chmod +x "$MINUI_ROOT"/.system/v90s/bin/* 2>/dev/null
@@ -96,12 +105,20 @@ enable_minui() {
 }
 
 disable_minui() {
-    # Disarm the boot trimmer first. Left armed, it would keep
+    # Disarm the boot trimmer first. Left active, it would keep
     # EmulationStation from starting at all once custom.sh is gone, so if
-    # that can't be done, change nothing.
-    if [ -f "$BOOT_MARKER" ] && ! set_boot_marker off && [ -f "$BOOT_CUSTOM" ]; then
-        log "ERROR: could not remove $BOOT_MARKER, and boot-custom.sh would"
-        log "then keep EmulationStation from starting. Nothing was changed."
+    # that can't be done, change nothing. v0.2's trimmer ignores the marker,
+    # so it is set aside (renamed, not deleted).
+    if old_boot_custom; then
+        boot_rw mv -f "$BOOT_CUSTOM" "$BOOT_CUSTOM.v0.2-off" &&
+            log "Set aside the v0.2 boot-custom.sh as boot-custom.sh.v0.2-off"
+    fi
+    if [ -f "$BOOT_MARKER" ]; then
+        boot_rw rm -f "$BOOT_MARKER"
+    fi
+    if our_boot_custom && { old_boot_custom || [ -f "$BOOT_MARKER" ]; }; then
+        log "ERROR: could not update /boot, and boot-custom.sh would then keep"
+        log "EmulationStation from starting. Nothing else was changed."
         log "Delete boot-custom.sh from the BATOCERA partition on a PC, then retry."
         sleep 5
         exit 1
