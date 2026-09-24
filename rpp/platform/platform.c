@@ -1,6 +1,7 @@
 // rgb30
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 #include <linux/fb.h>
 #include <sys/ioctl.h>
 #include <sys/mman.h>
@@ -650,7 +651,9 @@ int PLAT_supportsOverscan(void) { return 1; }
 #define OVERLAY_WIDTH PILL_SIZE // unscaled
 #define OVERLAY_HEIGHT PILL_SIZE // unscaled
 #define OVERLAY_BPP 4
-#define OVERLAY_DEPTH 16
+// 32, not 16: the mask below is ARGB8888, and SDL2 rejects the mismatched
+// depth (the surface comes back NULL).
+#define OVERLAY_DEPTH 32
 #define OVERLAY_PITCH (OVERLAY_WIDTH * OVERLAY_BPP) // unscaled
 #define OVERLAY_RGBA_MASK 0x00ff0000,0x0000ff00,0x000000ff,0xff000000 // ARGB
 static struct OVL_Context {
@@ -716,7 +719,43 @@ void PLAT_powerOff(void) {
 
 ///////////////////////////////
 
-#define GOVERNOR_PATH "/sys/devices/system/cpu/cpufreq/policy0/scaling_setspeed"
+#define CPUFREQ_DIR "/sys/devices/system/cpu/cpufreq/policy0"
+#define GOVERNOR_PATH CPUFREQ_DIR "/scaling_setspeed"
+#define MAX_FREQS 32
+
+static int freqs[MAX_FREQS];
+static int freq_count = 0;
+
+// The operating points this kernel really offers, ascending. RK3326 boards
+// don't all publish the same list (MinUI.pak/launch.sh has seen one stop at
+// 1368MHz), and a setspeed value that isn't on it is no reliable target.
+static void loadFreqs(void) {
+	static int loaded = 0;
+	if (loaded) return;
+	loaded = 1;
+
+	// zeroed: sysfs reports a 4096 byte size, so getFile only fills the
+	// buffer as far as the real contents and leaves the rest as it found it
+	char buffer[512] = {0};
+	getFile(CPUFREQ_DIR "/scaling_available_frequencies", buffer, sizeof(buffer));
+
+	char* tok = strtok(buffer, " \t\n");
+	while (tok && freq_count<MAX_FREQS) {
+		int f = atoi(tok);
+		if (f>0) freqs[freq_count++] = f;
+		tok = strtok(NULL, " \t\n");
+	}
+
+	// the kernel usually lists ascending, but don't rely on it
+	for (int i=0; i<freq_count; i++) {
+		for (int j=i+1; j<freq_count; j++) {
+			if (freqs[j]<freqs[i]) {
+				int t = freqs[i]; freqs[i] = freqs[j]; freqs[j] = t;
+			}
+		}
+	}
+}
+
 void PLAT_setCPUSpeed(int speed) {
 	int freq = 0;
 	switch (speed) {
@@ -725,6 +764,18 @@ void PLAT_setCPUSpeed(int speed) {
 		case CPU_SPEED_POWERSAVE:	freq = 1008000; break;
 		case CPU_SPEED_NORMAL: 		freq = 1296000; break;
 		case CPU_SPEED_PERFORMANCE: freq = 1512000; break;
+	}
+
+	// Snap to an operating point this board really has: the highest one at
+	// or below the target (the lowest if none are), or the top one for
+	// PERFORMANCE. Without a list, fall back to the targets as they are.
+	loadFreqs();
+	if (freq_count>0) {
+		int snapped = freqs[0];
+		for (int i=0; i<freq_count; i++) {
+			if (speed==CPU_SPEED_PERFORMANCE || freqs[i]<=freq) snapped = freqs[i];
+		}
+		freq = snapped;
 	}
 	putInt(GOVERNOR_PATH, freq);
 }

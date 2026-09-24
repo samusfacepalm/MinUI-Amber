@@ -1,4 +1,4 @@
-#m21
+# rpp (RK3326, AmberELEC)
 
 ###########################################################
 
@@ -14,26 +14,20 @@ endif
 
 REQUIRES_UNZIP60=other/unzip60
 
+# `show` is not built: it needs all/common/SDL2_rotozoom.c, which does not
+# exist in this tree. Every device ships the prebuilt aarch64
+# workspace/showpng.elf instead (see platform/makefile.copy).
+
 all: readmes
-	cd show && make
-	cd overclock && make
-#	cd other/DinguxCommander && make	
-#	cp /opt/$(PLATFORM)-toolchain/rootfs.ext2 ./boot/
-	
-#   cd other/squashfs && make
 
 early: $(REQUIRES_UNZIP60)
 	mkdir -p other
 	cd $(REQUIRES_UNZIP60) && make -f unix/Makefile.trimuismart unzip
-	
+
 clean:
-	cd show && make clean
-	cd overclock && make clean
-#	cd other/squashfs && make clean
-#	cd other/DinguxCommander && make clean
 	cd other/unzip60 && make -f unix/Makefile.trimuismart clean
-	
+
 $(REQUIRES_UNZIP60):
 	git clone --depth 1 https://github.com/shauninman/unzip60.git $(REQUIRES_UNZIP60)
-	
+
 include ../all/readmes/makefile

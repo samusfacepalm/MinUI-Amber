@@ -6,7 +6,9 @@
 //
 //   volume rocker alone  -> volume
 //   hotkey + rocker      -> brightness
-//   START + SELECT       -> kill a running standalone app
+//   START + SELECT       -> kill the app named in /tmp/killstandalone.txt
+//                           (nothing in MinUI Amber writes that file yet, so
+//                           in practice this never fires)
 
 #include <stdio.h>
 #include <stdlib.h>

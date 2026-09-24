@@ -14,10 +14,9 @@ endif
 
 REQUIRES_UNZIP60=other/unzip60
 
-# No overclock helper here: the RK3326 one poked scaling_setspeed under
-# the userspace governor. On KNULLI the CPU ceiling is set from
-# platform.c via scaling_max_freq, which works under the stock schedutil
-# governor and needs no governor switch in launch.sh.
+# No overclock helper: on KNULLI the CPU ceiling is set from platform.c via
+# scaling_max_freq, which works under the stock schedutil governor and needs
+# no governor switch in launch.sh.
 
 # `show` is not built: it needs all/common/SDL2_rotozoom.c, which does not
 # exist in this tree (the RG351V release ships the prebuilt aarch64

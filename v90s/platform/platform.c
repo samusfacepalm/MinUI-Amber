@@ -719,7 +719,9 @@ static void loadFreqs(void) {
 	if (loaded) return;
 	loaded = 1;
 
-	char buffer[512];
+	// zeroed: sysfs reports a 4096 byte size, so getFile only fills the
+	// buffer as far as the real contents and leaves the rest as it found it
+	char buffer[512] = {0};
 	getFile(CPUFREQ_DIR "/scaling_available_frequencies", buffer, sizeof(buffer));
 
 	char* tok = strtok(buffer, " \t\n");
@@ -778,7 +780,7 @@ int PLAT_pickSampleRate(int requested, int max) {
 
 static char model[256];
 char* PLAT_getModel(void) {
-	char buffer[256];
+	char buffer[256] = {0}; // left untouched if the file can't be read
 	getFile("/proc/device-tree/model", buffer, 256);
 
 	if (buffer[0]) strcpy(model, buffer);
