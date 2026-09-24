@@ -67,7 +67,7 @@ main() {
         exit 1
     fi
 
-    CORE_SO="$CORES_PATH/${EMU_EXE}_libretro.so"; [ -f "$CORE_SO" ] || CORE_SO="$SYSTEM_PATH/cores/${EMU_EXE}_libretro.so"; minarch.elf "$CORE_SO" "$ROM"
+    minarch.elf "$CORES_PATH/${EMU_EXE}_libretro.so" "$ROM"
 }
 
 main "$@"
