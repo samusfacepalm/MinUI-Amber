@@ -18,7 +18,8 @@ CUSTOM_BACKUP="/storage/.config/custom_start.sh.pre-minuiamber"
 
 # Services AmberELEC starts that MinUI does not need. Masked on enable,
 # unmasked on disable so EmulationStation gets its full environment back.
-# Keep this list in step with SERVICES in MinUI.pak/launch.sh.
+# Keep this list in step with SERVICES in the MinUI.pak launch scripts (the
+# RPP's leaves pulseaudio out on purpose).
 SERVICES="syncthing.service smbd.service nmbd.service webui.service avahi-daemon.service avahi-defaults.service lastgame.service wsdd2.service pulseaudio.service"
 
 # MinUI.pak/launch.sh masks these for the current boot only (--runtime), but

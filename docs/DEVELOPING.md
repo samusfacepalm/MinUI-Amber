@@ -16,7 +16,7 @@ glue that installs them and the documentation that ships with each release.
 | `extras_emus/` | Paks that ship in `MinUIAmber/Extras/`, plus older paks kept for reference. Unsupported. |
 | `installer/` | The boot glue: enable/disable scripts, the EmulationStation Ports entries, the PortMaster shims, and each device's `MinUI.pak/launch.sh`. |
 | `docs/` | Per-device INSTALL text, the plain-text README, the V90S README and the release notes. |
-| `minui_pak_launch.sh` | The AmberELEC `MinUI.pak/launch.sh` as shipped, for both the RG351V and the RPP: it takes the platform from the `.system/<platform>` folder it is installed in. The KNULLI one is `installer/v90s/minui_pak_launch.sh`. |
+| `minui_pak_launch.sh` | The RG351V's `MinUI.pak/launch.sh` as shipped. The RPP's is `installer/rpp/minui_pak_launch.sh` and is deliberately different (it leaves pulseaudio and logind alone and has its own audio init); the V90S's is `installer/v90s/minui_pak_launch.sh`. |
 
 ## Building
 

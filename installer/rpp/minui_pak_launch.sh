@@ -1,8 +1,10 @@
 #!/bin/sh
-# MinUI.pak launch script for RG351V on AmberELEC
-# (The RPP has its own, deliberately different one: installer/rpp/minui_pak_launch.sh.)
+# MinUI.pak launch script for RPP (Retro Pixel Pocket) on AmberELEC
+# Built from the verified-working v0.1 original, with only additions that
+# don't touch power/suspend/input/audio behavior (those were the ones that
+# broke when blindly carried over from the RG351V build).
 
-export PLATFORM="rg351v"
+export PLATFORM="rpp"
 export SDCARD_PATH="/storage/roms/MinUIAmber"
 export BIOS_PATH="$SDCARD_PATH/Bios"
 export ROMS_PATH="$SDCARD_PATH/Roms"
@@ -49,14 +51,15 @@ export LD_LIBRARY_PATH=$SYSTEM_PATH/lib:$LD_LIBRARY_PATH
 export PATH=$SYSTEM_PATH/bin:$PATH
 
 # Keep boot fast: re-mask the heavy services every boot so a prior
-# "Return to EmulationStation" (which unmasks them) doesn't leave boot slow forever.
-# Keep this list in step with SERVICES in EnableMinUIAmber.sh.
-SERVICES="syncthing.service smbd.service nmbd.service webui.service avahi-daemon.service avahi-defaults.service lastgame.service wsdd2.service pulseaudio.service"
+# "Return to EmulationStation" (which unmasks them) doesn't leave boot slow
+# forever. Not touching pulseaudio here -- the original script never masked
+# it and audio worked; leave that alone.
+SERVICES="syncthing.service smbd.service nmbd.service webui.service avahi-daemon.service avahi-defaults.service lastgame.service wsdd2.service"
 systemctl mask $SERVICES 2>/dev/null || true
 
-# MinUI does its own sleep, so keep systemd from suspending underneath it.
-# --runtime puts the mask in /run: it lasts this boot only and can never
-# outlive MinUI Amber. v0.2 masked these permanently (AmberELEC keeps masks in
+# Disable system sleep for as long as MinUI runs. --runtime puts the mask in
+# /run: it lasts this boot only and can never outlive MinUI Amber. v0.2
+# masked these permanently (AmberELEC keeps masks in
 # /storage/.config/system.d), which broke suspend even after "Disable MinUI
 # Amber" -- clear that out on installs that still carry it.
 SLEEP_TARGETS="sleep.target suspend.target hibernate.target hybrid-sleep.target"
@@ -67,16 +70,6 @@ for _t in $SLEEP_TARGETS; do
     fi
 done
 systemctl mask --runtime $SLEEP_TARGETS 2>/dev/null || true
-
-# AmberELEC ships HandlePowerKey=suspend, so logind races MinUI for the power
-# button and suspends the device ("sleeps instead of powering off" bug).
-# Override via /run drop-in: tmpfs, so it vanishes on reboot and never
-# touches the AmberELEC config.
-if [ ! -f /run/systemd/logind.conf.d/minui.conf ]; then
-    mkdir -p /run/systemd/logind.conf.d
-    printf '[Login]\nHandlePowerKey=ignore\nHandleSuspendKey=ignore\n' > /run/systemd/logind.conf.d/minui.conf
-    systemctl try-restart systemd-logind 2>/dev/null || true
-fi
 
 # Disable screen blanking
 echo 0 > /sys/class/graphics/fbcon/cursor_blink 2>/dev/null || true
@@ -105,37 +98,26 @@ for _df in /sys/class/devfreq/*.gpu /sys/class/devfreq/dmc; do
 done
 
 
-# Audio: the rk817 codec can probe after we start; early amixer calls fail
-# silently and sound stays dead until the first volume keypress re-applies
-# the mixer. Wait (bounded) for the card before touching it.
-for _i in 1 2 3 4 5 6 7 8 9 10 11 12; do
-    [ -e /proc/asound/card0 ] && break
-    sleep 0.5
-done
+# Audio routing: stock EmulationStation boot runs odroidgoa_utils.sh setaudio,
+# which does `amixer cset name='Playback Path' SPK` -- verified in this
+# device's own SYSTEM image (usr/bin/odroidgoa_utils.sh). MinUI's early hook
+# bypasses that, leaving the rk817 codec's output path at its driver default
+# (no output on current firmware). SPK_HP drives speaker and headphone jack
+# together; fall back to stock's plain SPK if the enum rejects it.
+amixer cset name='Playback Path' SPK_HP 2>/dev/null || amixer cset name='Playback Path' SPK 2>/dev/null || true
 
-# Audio routing: AmberELEC's autostart.sh sets the Playback Path AFTER the
-# custom_start "before" hook we launch from, so MinUI must set it itself or
-# audio routing is undefined
-amixer -c 0 cset iface=MIXER,name='Playback Path' SPK_HP 2>/dev/null || true
-amixer sset 'Playback' unmute 2>/dev/null || true
-
-# Initialize volume on first run only; after that MinUI's saved volume wins
-if [ ! -f "$USERDATA_PATH/.volume_initialized" ]; then
-    amixer sset 'Playback' 40% 2>/dev/null || true
-    touch "$USERDATA_PATH/.volume_initialized"
-fi
+# Initialize volume -- unchanged from the working v0.1 original
+amixer sset 'Playback' 94 2>/dev/null || true
 
 keymon.elf &
 
 cd $(dirname "$0")
 
-# MinUI Amber boot splash -- once per boot only, not per menu-return
-showpng.elf "$SDCARD_PATH/.system/res/logo.png" 2>/dev/null || true
-
 EXEC_PATH="/tmp/minui_exec"
 NEXT_PATH="/tmp/next"
 touch "$EXEC_PATH" && sync
 while [ -f $EXEC_PATH ]; do
+    showpng.elf "$SDCARD_PATH/.system/res/logo.png" 2>/dev/null || true
     minui.elf > $LOGS_PATH/minui.txt 2>&1
     echo $CPU_SPEED_PERF > $CPU_PATH 2>/dev/null || true
     sync
@@ -175,16 +157,12 @@ killall keymon.elf 2>/dev/null
 
 # The loop only ends through "Return to EmulationStation". Hand the rest of
 # this boot back to AmberELEC before its autostart brings ES up: the services
-# masked above, suspend, and logind's handling of the power button.
-# PulseAudio is up before ES starts, as it would be at boot; the rest start
-# alongside ES, and only if AmberELEC has them enabled.
+# masked above (started only if AmberELEC has them enabled) and suspend.
+# pulseaudio and logind are left exactly as this script found them.
 systemctl unmask $SERVICES 2>/dev/null || true
-systemctl start pulseaudio.service 2>/dev/null || true
 for _svc in $SERVICES; do
     if systemctl is-enabled --quiet "$_svc" 2>/dev/null; then
         systemctl start --no-block "$_svc" 2>/dev/null || true
     fi
 done
 systemctl unmask --runtime $SLEEP_TARGETS 2>/dev/null || true
-rm -f /run/systemd/logind.conf.d/minui.conf
-systemctl try-restart systemd-logind 2>/dev/null || true
