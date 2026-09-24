@@ -12,8 +12,8 @@ chmod +x "$ROM" 2>/dev/null
 cd "$(dirname "$ROM")"
 "$ROM" > "$LOGS_PATH/$EMU_TAG.txt" 2>&1
 
-# Ports (gptokeyb in particular) can leave the pad grabbed or take keymon
-# down with them on exit; clean up and self-heal so emulated games still
-# have input afterwards
+# Ports (gptokeyb in particular) can leave the pad grabbed on exit; let go of
+# it so emulated games still have input afterwards. If the port took keymon
+# down too, the MinUI.pak loop restarts it as soon as this returns -- doing it
+# here as well could start a second one.
 killall gptokeyb 2>/dev/null
-pidof keymon.elf > /dev/null 2>&1 || keymon.elf &

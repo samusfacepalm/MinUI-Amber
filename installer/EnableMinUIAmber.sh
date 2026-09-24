@@ -18,7 +18,12 @@ CUSTOM_BACKUP="/storage/.config/custom_start.sh.pre-minuiamber"
 
 # Services AmberELEC starts that MinUI does not need. Masked on enable,
 # unmasked on disable so EmulationStation gets its full environment back.
+# Keep this list in step with SERVICES in MinUI.pak/launch.sh.
 SERVICES="syncthing.service smbd.service nmbd.service webui.service avahi-daemon.service avahi-defaults.service lastgame.service wsdd2.service pulseaudio.service"
+
+# MinUI.pak/launch.sh masks these for the current boot only (--runtime), but
+# v0.2 masked them permanently, which left suspend broken after disabling.
+SLEEP_TARGETS="sleep.target suspend.target hibernate.target hybrid-sleep.target"
 
 log() { echo "[MinUIAmber] $*"; }
 
@@ -99,8 +104,10 @@ disable_minui() {
         log "custom_start.sh is not ours - leaving it alone."
     fi
 
-    # Give EmulationStation everything back
+    # Give EmulationStation everything back, suspend included
     systemctl unmask $SERVICES 2>/dev/null || true
+    systemctl unmask $SLEEP_TARGETS 2>/dev/null || true
+    systemctl unmask --runtime $SLEEP_TARGETS 2>/dev/null || true
     systemctl start pulseaudio.service 2>/dev/null || true
 
     sync

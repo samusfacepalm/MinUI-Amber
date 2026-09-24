@@ -36,8 +36,8 @@ export LOGS_PATH="$USERDATA_PATH/logs"
 export HOME="$USERDATA_PATH"
 export SDL_NOMOUSE=1
 
-# Use KNULLI's own libretro cores rather than shipping our own. They are
-# built against this exact BSP, and there are 100+ of them.
+# MinUI's own cores, shipped in .system/v90s/cores like the other two builds.
+# KNULLI's cores in /usr/lib/libretro are left to EmulationStation.
 export CORES_PATH="$SYSTEM_PATH/cores"
 
 # KNULLI's SDL2 has one video backend ("Mali EGL Video Driver").
@@ -117,6 +117,22 @@ date +"%F %T,%3N: MinUI.pak launch.sh reached" >> "$LOGS_PATH/boot.log" 2>/dev/n
     >> "$LOGS_PATH/boot.log" 2>/dev/null
 
 ###############################################################################
+# CPU ceiling.
+#
+# PLAT_setCPUSpeed caps scaling_max_freq, and minui.elf exits with it still at
+# the menu step. minarch sets its own speed, but nothing else does: ports,
+# PortMaster and -- after "Return to EmulationStation" -- ES and everything it
+# launches would all stay stuck at the menu clock. Put back the ceiling KNULLI
+# booted with whenever something other than minui is about to run.
+###############################################################################
+CPU_MAXFREQ_PATH=/sys/devices/system/cpu/cpufreq/policy0/scaling_max_freq
+CPU_BOOT_MAXFREQ=$(cat "$CPU_MAXFREQ_PATH" 2>/dev/null)
+[ -n "$CPU_BOOT_MAXFREQ" ] || CPU_BOOT_MAXFREQ=$(cat /sys/devices/system/cpu/cpufreq/policy0/cpuinfo_max_freq 2>/dev/null)
+restore_cpu_ceiling() {
+    [ -n "$CPU_BOOT_MAXFREQ" ] && echo "$CPU_BOOT_MAXFREQ" > "$CPU_MAXFREQ_PATH" 2>/dev/null
+}
+
+###############################################################################
 # Fast shutdown helper.
 #
 # KNULLI is sysvinit: `poweroff` runs rcK, which stops every /etc/init.d/S??
@@ -183,6 +199,7 @@ NEXT_PATH="/tmp/next"
 touch "$EXEC_PATH" && sync
 while [ -f $EXEC_PATH ]; do
     minui.elf > "$LOGS_PATH/minui.txt" 2>&1
+    restore_cpu_ceiling
     sync
 
     if [ -f $NEXT_PATH ]; then
@@ -191,15 +208,25 @@ while [ -f $EXEC_PATH ]; do
         eval "$CMD"
         echo "EXIT: $?" >> "$LOGS_PATH/launch.log"
         rm -f $NEXT_PATH
+        restore_cpu_ceiling
         sync
     fi
 
-    # self-heal: ports (gptokeyb) can leave the pad grabbed or kill keymon
+    # self-heal: ports (gptokeyb) can leave the pad grabbed or kill keymon.
+    # Check synchronously and only while the loop is going round again:
+    # `pidof ... || keymon.elf &` backgrounds the pidof too, which then races
+    # the killall below and can bring keymon back after "Return to
+    # EmulationStation" has killed it.
     killall gptokeyb 2>/dev/null
-    pidof keymon.elf > /dev/null 2>&1 || keymon.elf &
+    if [ -f "$EXEC_PATH" ] && ! pidof keymon.elf > /dev/null 2>&1; then
+        keymon.elf &
+    fi
 
     # keep the battery-saver stood down even if the daemon was restarted
-    [ -f "$BATTSAVER_PAUSE" ] || touch "$BATTSAVER_PAUSE" 2>/dev/null
+    # (unless the loop is ending: ES gets it back)
+    if [ -f "$EXEC_PATH" ] && [ ! -f "$BATTSAVER_PAUSE" ]; then
+        touch "$BATTSAVER_PAUSE" 2>/dev/null
+    fi
 
     if [ -f "/tmp/poweroff" ]; then
         rm -f "/tmp/poweroff"

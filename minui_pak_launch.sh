@@ -1,7 +1,12 @@
 #!/bin/sh
-# MinUI.pak launch script for RG351V on AmberELEC
+# MinUI.pak launch script for the RG351V and the RPP on AmberELEC.
+#
+# One script serves both: the platform is the name of the .system/<platform>
+# folder this pak sits in (.system/<platform>/paks/MinUI.pak/launch.sh).
 
-export PLATFORM="rg351v"
+PLATFORM=$(cd "$(dirname "$0")" && pwd -P)
+PLATFORM=$(basename "$(dirname "$(dirname "$PLATFORM")")")
+export PLATFORM
 export SDCARD_PATH="/storage/roms/MinUIAmber"
 export BIOS_PATH="$SDCARD_PATH/Bios"
 export ROMS_PATH="$SDCARD_PATH/Roms"
@@ -16,11 +21,11 @@ export HOME="$USERDATA_PATH"
 export SDL_NOMOUSE=1
 export SDL_AUDIODRIVER=alsa
 
-# CPU speeds consumed by minui/minarch (PLAT_setCPUSpeed). A value that is not
-# a real operating point is silently ignored by the kernel, leaving the clock
-# wherever it was, so derive them from the OPP list this kernel actually
-# publishes rather than hardcoding. (The old table asked for 1416000/1512000 on
-# a board whose points stop at 1368000, so "performance" never left 1296000.)
+# CPU speeds for this script's own clock bumps (at start, after minui exits and
+# after each pak). Derive them from the OPP list this kernel actually publishes
+# rather than hardcoding: the old table asked for 1416000/1512000 on a board
+# whose points stop at 1368000. minui and minarch don't read these -- they set
+# their own speeds in PLAT_setCPUSpeed, which snaps to the same list.
 _CPU_AVAIL=$(cat /sys/devices/system/cpu/cpufreq/policy0/scaling_available_frequencies 2>/dev/null)
 if [ -n "$_CPU_AVAIL" ]; then
 	_CPU_TOP=$(echo "$_CPU_AVAIL" | tr ' ' '
@@ -48,11 +53,24 @@ export LD_LIBRARY_PATH=$SYSTEM_PATH/lib:$LD_LIBRARY_PATH
 export PATH=$SYSTEM_PATH/bin:$PATH
 
 # Keep boot fast: re-mask the heavy services every boot so a prior
-# "Return to EmulationStation" (which unmasks them) doesn't leave boot slow forever
-systemctl mask syncthing.service smbd.service nmbd.service webui.service avahi-daemon.service avahi-defaults.service lastgame.service wsdd2.service pulseaudio.service 2>/dev/null || true
+# "Return to EmulationStation" (which unmasks them) doesn't leave boot slow forever.
+# Keep this list in step with SERVICES in EnableMinUIAmber.sh.
+SERVICES="syncthing.service smbd.service nmbd.service webui.service avahi-daemon.service avahi-defaults.service lastgame.service wsdd2.service pulseaudio.service"
+systemctl mask $SERVICES 2>/dev/null || true
 
-# Disable system sleep
-systemctl mask sleep.target suspend.target hibernate.target hybrid-sleep.target 2>/dev/null || true
+# MinUI does its own sleep, so keep systemd from suspending underneath it.
+# --runtime puts the mask in /run: it lasts this boot only and can never
+# outlive MinUI Amber. v0.2 masked these permanently (AmberELEC keeps masks in
+# /storage/.config/system.d), which broke suspend even after "Disable MinUI
+# Amber" -- clear that out on installs that still carry it.
+SLEEP_TARGETS="sleep.target suspend.target hibernate.target hybrid-sleep.target"
+for _t in $SLEEP_TARGETS; do
+    if [ -L "/storage/.config/system.d/$_t" ]; then
+        systemctl unmask $SLEEP_TARGETS 2>/dev/null || true
+        break
+    fi
+done
+systemctl mask --runtime $SLEEP_TARGETS 2>/dev/null || true
 
 # AmberELEC ships HandlePowerKey=suspend, so logind races MinUI for the power
 # button and suspends the device ("sleeps instead of powering off" bug).
@@ -129,16 +147,22 @@ while [ -f $EXEC_PATH ]; do
     if [ -f $NEXT_PATH ]; then
         CMD=$(cat $NEXT_PATH)
         echo "CMD: $CMD" >> $LOGS_PATH/launch.log
-        eval $CMD
+        # quoted: unquoted, runs of spaces in a rom path collapse to one
+        eval "$CMD"
         echo "EXIT: $?" >> $LOGS_PATH/launch.log
         rm -f $NEXT_PATH
         echo $CPU_SPEED_PERF > $CPU_PATH 2>/dev/null || true
         sync
     fi
 
-    # self-heal: ports (gptokeyb) can leave the pad grabbed or kill keymon
+    # self-heal: ports (gptokeyb) can leave the pad grabbed or kill keymon.
+    # Check synchronously and only while the loop is going round again:
+    # `pidof ... || keymon.elf &` backgrounds the pidof too, which then
+    # races the killall below and can leave a stray keymon running under ES.
     killall gptokeyb 2>/dev/null
-    pidof keymon.elf > /dev/null 2>&1 || keymon.elf &
+    if [ -f "$EXEC_PATH" ] && ! pidof keymon.elf > /dev/null 2>&1; then
+        keymon.elf &
+    fi
 
     if [ -f "/tmp/poweroff" ]; then
         rm -f "/tmp/poweroff"
@@ -152,3 +176,19 @@ while [ -f $EXEC_PATH ]; do
 done
 
 killall keymon.elf 2>/dev/null
+
+# The loop only ends through "Return to EmulationStation". Hand the rest of
+# this boot back to AmberELEC before its autostart brings ES up: the services
+# masked above, suspend, and logind's handling of the power button.
+# PulseAudio is up before ES starts, as it would be at boot; the rest start
+# alongside ES, and only if AmberELEC has them enabled.
+systemctl unmask $SERVICES 2>/dev/null || true
+systemctl start pulseaudio.service 2>/dev/null || true
+for _svc in $SERVICES; do
+    if systemctl is-enabled --quiet "$_svc" 2>/dev/null; then
+        systemctl start --no-block "$_svc" 2>/dev/null || true
+    fi
+done
+systemctl unmask --runtime $SLEEP_TARGETS 2>/dev/null || true
+rm -f /run/systemd/logind.conf.d/minui.conf
+systemctl try-restart systemd-logind 2>/dev/null || true

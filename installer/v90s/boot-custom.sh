@@ -21,10 +21,18 @@
 # and the read-only squashfs rootfs is untouched. A KNULLI update cannot
 # conflict with any of it.
 #
+# ONLY WHILE MINUI AMBER IS ENABLED
+# EnableMinUIAmber.sh creates /boot/minuiamber-enabled and "Disable MinUI
+# Amber" removes it. Without that marker this script does nothing, so a
+# disabled install boots stock KNULLI -- EmulationStation, hotkeys, battery
+# saver and all -- even with this file still on the card. The marker has to
+# live on /boot: /userdata is not mounted yet when S00bootcustom runs.
+#
 # TO UNDO: delete or rename this file. It lives on the FAT32 BATOCERA
 # partition, so any PC can do it -- no shell, no device access needed.
 
 test "$1" = "start" || exit 0
+[ -f /boot/minuiamber-enabled ] || exit 0
 
 # --- disabled -------------------------------------------------------------
 # avahi        mDNS/service discovery -- nothing to discover
