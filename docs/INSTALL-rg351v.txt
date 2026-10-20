@@ -1,5 +1,5 @@
 ===============================================================================
- MinUI Amber v0.2.1 - Anbernic RG351V (AmberELEC) - Installation
+ MinUI Amber v0.3 - Anbernic RG351V (AmberELEC) - Installation
 ===============================================================================
 
 WHAT THIS IS

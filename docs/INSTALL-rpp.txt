@@ -1,5 +1,5 @@
 ===============================================================================
- MinUI Amber v0.2.1 - Retro Pixel Pocket (AmberELEC) - Installation
+ MinUI Amber v0.3 - Retro Pixel Pocket (AmberELEC) - Installation
 ===============================================================================
 
 WHAT THIS IS

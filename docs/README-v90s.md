@@ -1,4 +1,4 @@
-# MinUI Amber v0.2.1 — Powkiddy V90S (KNULLI)
+# MinUI Amber v0.3 — Powkiddy V90S (KNULLI)
 
 MinUI as the front end on a Powkiddy V90S running KNULLI, installed inside
 `/userdata` so a KNULLI system update can't remove it.
