@@ -1,7 +1,8 @@
 ===============================================================================
- MinUI Amber v0.2.1
+ MinUI Amber v0.3
 ===============================================================================
- A port of MinUI for AmberELEC on RK3326 devices, and KNULLI on the V90S
+ A port of MinUI for AmberELEC on RK3326 devices, KNULLI on the V90S, and
+ ArkOS4Clone on the A10 Mini
 
 MinUI Amber is more or less intended to be a straight port in the spirit of
 the original MinUI. Simple UI, simple SD card, a frontend that is designed to
@@ -20,7 +21,8 @@ Return to EmulationStation, where you can use the full AmberELEC environment.
 The device will still boot into MinUI next boot.
 
 MinUI Amber runs on top of AmberELEC. It runs over the top of KNULLI on the
-V90S. It does not replace your firmware. You can return to EmulationStation at
+V90S, and over the A10 Mini's own ArkOS4Clone. It does not replace your
+firmware. You can return to EmulationStation at
 any time.
 
 -------------------------------------------------------------------------------
@@ -31,6 +33,8 @@ any time.
   Anbernic RG351V                   ✅ Supported
   Retro Pixel Pocket (RPP)          ✅ Supported
   Powkiddy V90S (KNULLI)            ✅ Supported
+  YMC A10 Mini v1 / v2              ✅ Supported
+  YMC A10 Mini V4                   ⚠️ Should work, untested
 
  Planned Devices
 - Anbernic RG351M -- in progress (requires full platform port, 320x480
@@ -87,6 +91,25 @@ That removes the boot hook, restores the AmberELEC services MinUI Amber masks
 for faster boot, and reboots into EmulationStation. Nothing is deleted, so
 Ports -> Enable MinUI Amber switches back whenever you want.
 
+YMC A10 Mini
+
+Same idea, different paths. The big partition is called EASYROMS, and it's
+/roms on the device.
+
+1. Copy MinUIAmber/ to the top of EASYROMS, so it sits at /roms/MinUIAmber/.
+2. Copy the three .sh files from ports/ into EASYROMS/ports/. There's an
+   Uninstall MinUI Amber on this one as well.
+3. Boot to EmulationStation, then Ports -> Enable MinUI Amber.
+
+Enable changes two files on the BOOT partition, and backs each one up first as
+<name>.minuiamber-orig: firstboot.sh, so MinUI starts before EmulationStation,
+and the screen's DTB, so the screen runs at 60 Hz. Ports -> Uninstall MinUI
+Amber puts both back. If the device ever won't boot at all, copy the
+.minuiamber-orig files back over the originals from a PC.
+
+One download covers every A10 Mini. The V4's bigger screen is picked up on its
+own.
+
 -------------------------------------------------------------------------------
  YOUR ROMS
 -------------------------------------------------------------------------------
@@ -110,6 +133,9 @@ Place your ROMs in the matching folder inside MinUIAmber/Roms/:
   Super Nintendo Entertainment System (SUPA)  SNES
   Playstation (PS)                  PS1
   Portmaster (PORTS)                Portmaster
+  Sega Genesis (MD)                 Mega Drive / Genesis (A10 Mini only for now)
+  WonderSwan Colour (WSC)           WonderSwan and WonderSwan Colour (A10 Mini
+                                    only for now)
 
 Please note MinUI Amber doesn't use GPSP or Gambatte. MGBA is used for
 all Gameboy emulation.
@@ -149,7 +175,8 @@ In menus:
   D-pad                             Navigate
   A                                 Select / confirm
   B                                 Back / cancel
-  Power                             Sleep (press) / Power off (hold)
+  Power                             Sleep (press) / Power off (hold).
+                                    On the A10 Mini, a press powers off
 
 In games:
   Input                             Action
@@ -173,6 +200,13 @@ In games:
 
 - [RPP] Controls can occasionally stop responding when the device goes into
   standby until the power switch is briefly slid.
+
+- [A10 Mini] A lot of these screens look dark and washed out head on, and fine
+  at an angle. That's the panel, not MinUI. Tools -> Display Fix helps; run it
+  again to turn it off.
+
+- [A10 Mini V4] I don't have one. It should work, since it's the same board
+  with a bigger screen, but nobody has tried it yet. Tell me if it doesn't.
 
 -------------------------------------------------------------------------------
  FAQ
@@ -203,6 +237,12 @@ add-on was built and tested on the Retro Pixel Pocket; there's no reason a
 PICO-8 Native pak compiled for the RK3326 shouldn't work elsewhere, but it
 hasn't been tried.
 
+Q: Why did my A10 Mini's screen change to 60 Hz?
+A: Out of the box it runs at 57.7 Hz (61.7 on the V4). Games expect 60, so
+they ran slow, or fast, and the sound crackled trying to keep up. Enable speeds
+the screen's clock up or down to 60 and leaves everything else in the file
+alone. EmulationStation gets the 60 Hz too.
+
 Q: It stinks, it stinks, it stinks!
 A: Yes Mr Sherman, everything stinks. No, seriously, this is the first time
 I've ever done anything like this. Please let me know if it does stink.
@@ -210,6 +250,18 @@ I've ever done anything like this. Please let me know if it does stink.
 -------------------------------------------------------------------------------
  CHANGELOG
 -------------------------------------------------------------------------------
+
+v0.3
+
+YMC A10 Mini
+- Initial support: v1, v2 and V4, on the ArkOS4Clone it ships with. Tested on
+  a v1.
+- Screen runs at 60 Hz, so games run at the right speed without crackle.
+- Sega Genesis and WonderSwan added.
+- Display Fix in Tools for the dark screens.
+- A press of the power button turns it off.
+
+The RG351V, RPP and V90S are unchanged from v0.2.1.
 
 v0.2.1
 
@@ -284,4 +336,5 @@ All included software is still covered under its original licenses.
 MinUI Amber port by MinUI Installer
 Built on AmberELEC -- https://amberelec.org
 Built on KNULLI - Knulli.org
+Built on ArkOS4Clone, a build of ArkOS for clone devices
 
