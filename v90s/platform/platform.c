@@ -659,7 +659,7 @@ void PLAT_getBatteryStatus(int* is_charging, int* charge) {
 	// The V90S has no wifi (powkiddy-v90s is absent from
 	// BOARD_CAPABILITIES[wifi]) but read the node anyway so a USB dongle
 	// or a future board revision reports correctly.
-	char status[16];
+	char status[16] = {0}; // getFile leaves it untouched if there is no wlan0
 	getFile("/sys/class/net/wlan0/operstate", status,16);
 	online = prefixMatch("up", status);
 }

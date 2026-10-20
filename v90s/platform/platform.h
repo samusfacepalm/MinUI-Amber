@@ -108,6 +108,11 @@
 #define BTN_MOD_PLUS 		BTN_PLUS
 #define BTN_MOD_MINUS 		BTN_MINUS
 
+// A press of POWER shuts the device down rather than sleeping it. Idle
+// autosleep still just blanks the screen. (MinUIAmber policy on V90S and A10 Mini;
+// github issue #1: sleep-then-shutdown-two-minutes-later read as a fault.)
+#define SLEEP_IS_POWEROFF	1
+
 ///////////////////////////////
 // Panel is 640x480, straight from the device tree:
 //   v90s_kernel.dts lcd0: lcd_x = <0x280>; lcd_y = <0x1e0>;

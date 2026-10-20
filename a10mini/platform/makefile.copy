@@ -1,0 +1,7 @@
+$(PLATFORM):
+	# $@
+	cp ./workspace/showpng.elf ./build/SYSTEM/$@/bin
+	# installer payload
+	mkdir -p ./build/BASE/$@
+	cp ./workspace/$@/libmsettings/libmsettings.so ./build/BASE/$@/libmsettings.so
+	cp ./workspace/$@/other/unzip60/unzip ./build/BASE/$@/

@@ -185,9 +185,15 @@ void GFX_setMode(int mode) {
 int GFX_getVsync(void) {
 	return gfx.vsync;
 }
+#ifdef HAS_DISPLAY_HZ
+static void SND_applyDisplayScale(void);
+#endif
 void GFX_setVsync(int vsync) {
 	PLAT_setVsync(vsync);
 	gfx.vsync = vsync;
+#ifdef HAS_DISPLAY_HZ
+	SND_applyDisplayScale();
+#endif
 }
 
 int GFX_hdmiChanged(void) {
@@ -968,7 +974,9 @@ static void SND_audioCallback(void* userdata, uint8_t* stream, int len) { // pla
 	
 	int zero = len>0 && len==SAMPLES;
 	if (zero) return (void)memset(out,0,len*(sizeof(int16_t) * 2));
-	// else if (len>=5) LOG_info("%8i BUFFER UNDERRUN (%i/%i frames)\n", ms(), len,full_len);
+#ifdef SND_DEBUG
+	else if (len>=5) { static int n = 0; if ((++n % 20)==1) LOG_info("%8i BUFFER UNDERRUN #%i (%i short)\n", ms(), n, len); }
+#endif
 
 	int16_t *in = out-1;
 	while (len>0) {
@@ -1019,6 +1027,40 @@ static int SND_resampleNear(SND_Frame frame) { // audio_resample_nearest
 
 	return consumed;
 }
+#ifdef HAS_DISPLAY_HZ
+// Audio sync for panels that do not run at the core's frame rate.
+//
+// With vsync on, the core is paced at the panel's refresh rather than its
+// own frame rate, but it still emits one core frame's worth of samples per
+// frame. If the panel is slower (57.72 Hz factory A10 Mini timing) the DAC
+// is fed short and crackles; if it is faster (59.73 fps Game Boy on a 60 Hz
+// panel, 61.71 Hz V4 factory timing) the ring overfills and the core stalls.
+// Pretend the core's sample rate differs by exactly display/core, and the
+// nearest-neighbour resampler stretches or squeezes the audio to match.
+// Only small mismatches are corrected: a 50 fps PAL game on a 60 Hz panel
+// would come out a fifth sharp, so that stays audio-clocked as before. With
+// vsync off the loop is audio-clocked and no scaling is needed.
+// PLAT_displayHz() measures the real mode from DRM, so this is right
+// whichever panel timing the DTB carries.
+static double snd_base_rate = 0;
+static void SND_selectResampler(void);
+static void SND_applyDisplayScale(void) {
+	if (!snd.initialized || snd_base_rate<=0 || snd.frame_rate<=0) return;
+	double in = snd_base_rate;
+	double hz = PLAT_displayHz();
+	if (gfx.vsync!=VSYNC_OFF && hz>0) {
+		double ratio = hz / snd.frame_rate;
+		if (ratio>0.95 && ratio<1.05) in = snd_base_rate * ratio;
+	}
+	int rate = (int)(in + 0.5);
+	if (rate==snd.sample_rate_in) return;
+	SDL_LockAudio();
+	snd.sample_rate_in = rate;
+	SND_selectResampler();
+	SDL_UnlockAudio();
+	LOG_info("audio sync: display %.3f Hz, core %.3f fps -> input rate %i (base %i)\n", hz, snd.frame_rate, snd.sample_rate_in, (int)snd_base_rate);
+}
+#endif
 static void SND_selectResampler(void) { // plat_sound_select_resampler
 	if (snd.sample_rate_in==snd.sample_rate_out) {
 		snd.resample =  SND_resampleNone;
@@ -1049,7 +1091,9 @@ size_t SND_batchSamples(const SND_Frame* frames, size_t frame_count) { // plat_s
 			SDL_Delay(1);
 			SDL_LockAudio();
 		}
-		// if (tries) LOG_info("%8i waited %ims for buffer to get low...\n", ms(), tries);
+#ifdef SND_DEBUG
+		if (tries>=10) { static int n = 0; if ((++n % 20)==1) LOG_info("%8i BUFFER FULL #%i, dropping %i frames\n", ms(), n, (int)frame_count); }
+#endif
 
 		while (amount && snd.frame_in != snd.frame_filled) {
 			consumed_frames = snd.resample(*frames);
@@ -1103,6 +1147,10 @@ void SND_init(double sample_rate, double frame_rate) { // plat_sound_init
 
 	LOG_info("sample rate: %i (req) %i (rec) [samples %i]\n", snd.sample_rate_in, snd.sample_rate_out, SAMPLES);
 	snd.initialized = 1;
+#ifdef HAS_DISPLAY_HZ
+	snd_base_rate = sample_rate;
+	SND_applyDisplayScale();
+#endif
 }
 void SND_quit(void) { // plat_sound_finish
 	if (!snd.initialized) return;
@@ -1543,6 +1591,17 @@ void PWR_update(int* _dirty, int* _show_setting, PWR_callback_t before_sleep, PW
 	#define SLEEP_DELAY 30000 // 30 seconds
 	if (now-last_input_at>=SLEEP_DELAY && PWR_preventAutosleep()) last_input_at = now;
 	
+#ifdef SLEEP_IS_POWEROFF
+	// MinUIAmber: a deliberate press of the sleep button powers the device
+	// off outright. Sleep-then-shutdown-two-minutes-later reads as a
+	// malfunction on these handhelds (github issue #1, V90S). Autosleep on
+	// idle is unchanged: that still just blanks the screen.
+	if (pwr.can_poweroff && pwr.can_sleep && PAD_justReleased(BTN_SLEEP)) {
+		if (before_sleep) before_sleep();
+		PWR_powerOff();
+	}
+#endif
+
 	if (
 		pwr.requested_sleep || // hardware requested sleep
 		now-last_input_at>=SLEEP_DELAY || // autosleep

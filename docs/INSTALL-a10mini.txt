@@ -1,0 +1,107 @@
+===============================================================================
+ MinUI Amber v0.3 - YMC A10 Mini (ArkOS4Clone) - Installation
+===============================================================================
+
+WHAT THIS IS
+  MinUI Amber runs on top of ArkOS4Clone, the firmware the A10 Mini ships
+  with. It does not replace your firmware: it starts before EmulationStation
+  and hands back to it when you leave. It is turned on and off from
+  EmulationStation's PORTS menu.
+
+  One download covers every A10 Mini:
+    v1 / v2   640x480 screen
+    V4        720x540 screen (picked up automatically)
+
+  The V4 build has NOT been tested on a V4 yet. The v1 is the tested one.
+
+INSTALL
+
+  1. Extract this zip on your PC.
+
+  2. Put the SD card in your PC. It shows up as (at least) two drives:
+       BOOT       - small FAT32 boot partition
+       EASYROMS   - the big one, holding your games (this is /roms)
+
+  3. Copy the MinUIAmber folder to the top of EASYROMS, so it sits at:
+
+         EASYROMS\MinUIAmber\        (/roms/MinUIAmber on the device)
+
+  4. Copy the CONTENTS of the ports folder into EASYROMS\ports\:
+
+         EASYROMS\ports\Enable MinUI Amber.sh
+         EASYROMS\ports\Disable MinUI Amber.sh
+         EASYROMS\ports\Uninstall MinUI Amber.sh
+
+  5. Eject the card, put it in the device, and boot into EmulationStation
+     as normal.
+
+  6. Go to PORTS and run "Enable MinUI Amber".
+     The device reboots into MinUI Amber.
+
+WHAT "ENABLE" CHANGES
+  Two files on the BOOT partition, each backed up first as
+  <name>.minuiamber-orig:
+
+    firstboot.sh   ArkOS4Clone runs this on every boot, before
+                   EmulationStation. A short block is added that starts
+                   MinUI.
+
+    the screen DTB (rk3326-a10mini-linux.dtb, or rk3326-a10mini-v4-linux.dtb
+                   on a V4)
+                   The screen's refresh rate is set to 60 Hz. The factory
+                   setting is 57.7 Hz on the v1/v2 and 61.7 Hz on the V4,
+                   which makes games run slightly slow or fast. Only the
+                   screen's clock speed changes; nothing else in the file.
+                   EmulationStation runs at 60 Hz too.
+
+  If an ArkOS update or the DTB selector replaces either file, run
+  "Enable MinUI Amber" again and it puts the changes back.
+
+UPDATING
+  Copy the new MinUIAmber folder over your existing one, then run
+  "Enable MinUI Amber" from PORTS again. Your ROMs, saves and settings are
+  left alone.
+
+TURNING IT OFF
+
+  From MinUI:  Tools -> Return to EmulationStation
+               (temporary - the next boot goes back to MinUI)
+
+  Disable:     PORTS -> "Disable MinUI Amber". The device boots to
+               EmulationStation until you run "Enable MinUI Amber" again.
+               Nothing is changed or deleted.
+
+  Uninstall:   PORTS -> "Uninstall MinUI Amber". Puts the original
+               firstboot.sh and DTB back and reboots. Delete the MinUIAmber
+               folder and the three ports entries from a PC afterwards if
+               you want the space back.
+
+  If the device will not boot to anything: put the card in a PC and, on
+  the BOOT partition, copy each *.minuiamber-orig file back over the file
+  of the same name without the suffix.
+
+YOUR ROMS
+  Put them in MinUIAmber\Roms\ in the matching folder. The tag in
+  parentheses is what picks the emulator and must not be changed; the text
+  before it is just the menu label. See README.md for the full table.
+  This build adds Sega Genesis (MD) and WonderSwan Colour (WSC).
+
+SCREEN COLOUR
+  Many A10 Mini screens look dark and washed out straight on, and fine at an
+  angle. That is the panel. Tools -> Display Fix applies a colour
+  correction that helps on those units; run it again to turn it off. It
+  uses ArkOS's own gamma tool (/roms/tools/Gamma), so keep the tools folder.
+
+TROUBLE
+  The MinUI Amber entries are not in the PORTS menu?
+      The .sh files must sit DIRECTLY in EASYROMS\ports\, not in a
+      subfolder. Refresh the game list or reboot.
+
+  "Install failed"?
+      The reason is in MinUIAmber\.userdata\a10mini\logs\install.log.
+
+  Clock is wrong?
+      There is no battery-backed clock on this board.
+
+Full documentation, device notes and known issues: README.md
+===============================================================================
